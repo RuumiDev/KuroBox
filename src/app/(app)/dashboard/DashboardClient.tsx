@@ -8,6 +8,7 @@ import TemplateSelector from '@/components/onboarding/TemplateSelector';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import Button from '@/components/ui/Button';
 import { Plus, LogOut, LayoutGrid, Clock, Pencil, Check, X, Trash2 } from 'lucide-react';
+import ThemeSelector from '@/components/navigation/ThemeSelector';
 
 interface DashboardClientProps {
   initialBoards: Board[];
@@ -98,13 +99,16 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
           <div className="w-6 h-6 bg-[#FFDE4D] rounded-sm" />
           <span className="text-sm font-bold tracking-tight">KuroBox</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
-        >
-          <LogOut size={13} />
-          Sign out
-        </button>
+        <div className="flex items-center gap-3">
+          <ThemeSelector />
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
+          >
+            <LogOut size={13} />
+            Sign out
+          </button>
+        </div>
       </header>
 
       {/* Content */}

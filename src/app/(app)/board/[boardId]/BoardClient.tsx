@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import { ArrowLeft, Settings, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { ImportResult } from '@/lib/utils/importers';
+import ThemeSelector from '@/components/navigation/ThemeSelector';
 
 interface BoardClientProps {
   initialBoard: Board;
@@ -82,6 +83,7 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          <ThemeSelector />
           <ViewToggle view={view} onChange={v => updateConfig({ view: v })} />
           <Button
             variant="ghost"

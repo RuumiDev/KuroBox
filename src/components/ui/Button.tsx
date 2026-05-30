@@ -20,10 +20,10 @@ export default function Button({
   className = '',
 }: ButtonProps) {
   const base =
-    'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-sm transition-all cursor-pointer select-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFDE4D]';
+    'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-sm transition-all cursor-pointer select-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-kb-accent';
 
   const variants = {
-    primary: 'bg-[#FFDE4D] text-black hover:bg-[#FFE87A] active:scale-[0.98]',
+    primary: 'bg-kb-accent text-kb-accent-fg hover:bg-kb-accent-hover active:scale-[0.98]',
     ghost: 'border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white bg-transparent',
     danger: 'border border-red-800 text-red-400 hover:bg-red-900/20 bg-transparent',
   };

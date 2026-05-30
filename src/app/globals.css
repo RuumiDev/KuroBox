@@ -4,13 +4,109 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-/* ── Scrollbars ─────────────────────────────────────── */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: #18181b; }
-::-webkit-scrollbar-thumb  { background: #3f3f46; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #52525b; }
+/* ══════════════════════════════════════════════════════════════════
+   THEME CUSTOM PROPERTIES
+   01: Stealth  |  02: Radiation  |  03: Overdrive  |  04: White-Out
+══════════════════════════════════════════════════════════════════ */
 
-/* ── Accessibility ──────────────────────────────────── */
+:root,
+html[data-theme="stealth"] {
+  --kb-bg:            #000000;
+  --kb-surface:       #18181b;
+  --kb-surface-alt:   #27272a;
+  --kb-border:        #27272a;
+  --kb-border-subtle: #1e1e21;
+  --kb-accent:        #FFDE4D;
+  --kb-accent-hover:  #FFE87A;
+  --kb-accent-fg:     #000000;
+  --kb-text:          #ffffff;
+  --kb-text-muted:    #71717a;
+  --kb-text-dim:      #3f3f46;
+  color-scheme: dark;
+}
+
+html[data-theme="radiation"] {
+  --kb-bg:            #111411;
+  --kb-surface:       #161b16;
+  --kb-surface-alt:   #1d241d;
+  --kb-border:        #222d22;
+  --kb-border-subtle: #1a201a;
+  --kb-accent:        #39FF14;
+  --kb-accent-hover:  #5fff3a;
+  --kb-accent-fg:     #000000;
+  --kb-text:          #e8f5e8;
+  --kb-text-muted:    #7a9b7a;
+  --kb-text-dim:      #3d5c3d;
+  color-scheme: dark;
+}
+
+html[data-theme="overdrive"] {
+  --kb-bg:            #121214;
+  --kb-surface:       #1a1a1e;
+  --kb-surface-alt:   #222228;
+  --kb-border:        #282830;
+  --kb-border-subtle: #1e1e24;
+  --kb-accent:        #FF5F00;
+  --kb-accent-hover:  #ff7a2b;
+  --kb-accent-fg:     #000000;
+  --kb-text:          #ffffff;
+  --kb-text-muted:    #71717a;
+  --kb-text-dim:      #3f3f46;
+  color-scheme: dark;
+}
+
+html[data-theme="whiteout"] {
+  --kb-bg:            #ffffff;
+  --kb-surface:       #f4f4f5;
+  --kb-surface-alt:   #e4e4e7;
+  --kb-border:        #e4e4e7;
+  --kb-border-subtle: #d4d4d8;
+  --kb-accent:        #09090b;
+  --kb-accent-hover:  #27272a;
+  --kb-accent-fg:     #ffffff;
+  --kb-text:          #09090b;
+  --kb-text-muted:    #52525b;
+  --kb-text-dim:      #a1a1aa;
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   THEME OVERRIDES — remap hardcoded Tailwind classes to CSS vars.
+   `html` prefix adds specificity (0,1,1) to beat bare classes (0,1,0).
+══════════════════════════════════════════════════════════════════ */
+
+html body                { background-color: var(--kb-bg); color: var(--kb-text); }
+html .bg-black           { background-color: var(--kb-bg); }
+html .bg-zinc-900        { background-color: var(--kb-surface); }
+html .bg-zinc-800        { background-color: var(--kb-surface-alt); }
+html .border-zinc-800    { border-color: var(--kb-border); }
+html .border-zinc-900    { border-color: var(--kb-border-subtle); }
+
+/* Accent colour: #FFDE4D → var(--kb-accent) across all themes */
+html .bg-\[\#FFDE4D\]                                { background-color: var(--kb-accent); }
+html .hover\:bg-\[\#FFE87A\]:hover                   { background-color: var(--kb-accent-hover); }
+html .text-\[\#FFDE4D\]                              { color: var(--kb-accent); }
+html .border-\[\#FFDE4D\]                            { border-color: var(--kb-accent); }
+html .focus\:border-\[\#FFDE4D\]:focus               { border-color: var(--kb-accent); }
+html .focus-visible\:ring-\[\#FFDE4D\]:focus-visible { --tw-ring-color: var(--kb-accent); }
+html .ring-\[\#FFDE4D\]                              { --tw-ring-color: var(--kb-accent); }
+html .from-\[\#FFDE4D\]                              { --tw-gradient-from: var(--kb-accent); }
+
+/* White-Out: invert text-white / muted text to be readable on light bg */
+html[data-theme="whiteout"] .text-white   { color: var(--kb-text); }
+html[data-theme="whiteout"] .text-zinc-300 { color: #3f3f46; }
+html[data-theme="whiteout"] .text-zinc-400 { color: #52525b; }
+html[data-theme="whiteout"] .text-zinc-500 { color: #71717a; }
+html[data-theme="whiteout"] .text-zinc-600 { color: #52525b; }
+html[data-theme="whiteout"] .text-zinc-700 { color: #3f3f46; }
+
+/* ── Scrollbars ──────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-track        { background: var(--kb-surface); }
+::-webkit-scrollbar-thumb        { background: var(--kb-surface-alt); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--kb-text-muted); }
+
+/* ── Accessibility ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -18,7 +114,7 @@
   }
 }
 
-/* ── Shared field label utility ─────────────────────── */
+/* ── Shared utilities ────────────────────────────────────────── */
 @layer components {
   .field-label {
     @apply block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5;
