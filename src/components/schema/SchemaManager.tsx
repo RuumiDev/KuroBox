@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { BoardSchema, AttributeField, AttributeType } from '@/types';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import { Plus, Trash2, GripVertical, Eye, EyeOff, Tag, X } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Eye, EyeOff, X } from 'lucide-react';
 
 interface SchemaManagerProps {
   schema: BoardSchema;
@@ -23,7 +23,6 @@ const TYPE_OPTIONS: { value: AttributeType; label: string }[] = [
 
 export default function SchemaManager({ schema, onSave, onClose }: SchemaManagerProps) {
   const [attrs, setAttrs] = useState<AttributeField[]>(schema.attributes);
-  const [expandedOptions, setExpandedOptions] = useState<string | null>(null);
   const [newOptionInputs, setNewOptionInputs] = useState<Record<string, string>>({});
   const newOptionRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -81,27 +80,13 @@ export default function SchemaManager({ schema, onSave, onClose }: SchemaManager
               {/* Type */}
               <select
                 value={attr.type}
-                onChange={e => {
-                  update(attr.id, { type: e.target.value as AttributeType });
-                  if (e.target.value === 'select') setExpandedOptions(attr.id);
-                }}
+                onChange={e => update(attr.id, { type: e.target.value as AttributeType })}
                 className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs px-2 py-1 rounded-sm focus:outline-none cursor-pointer"
               >
                 {TYPE_OPTIONS.map(t => (
                   <option key={t.value} value={t.value} className="bg-zinc-900">{t.label}</option>
                 ))}
               </select>
-
-              {/* Options expand toggle (select only) */}
-              {attr.type === 'select' && (
-                <button
-                  onClick={() => setExpandedOptions(expandedOptions === attr.id ? null : attr.id)}
-                  title="Edit tag options"
-                  className={`transition-colors cursor-pointer ${expandedOptions === attr.id ? 'text-[#FFDE4D]' : 'text-zinc-500 hover:text-[#FFDE4D]'}`}
-                >
-                  <Tag size={14} />
-                </button>
-              )}
 
               {/* Visible toggle */}
               <button
@@ -124,8 +109,8 @@ export default function SchemaManager({ schema, onSave, onClose }: SchemaManager
               )}
             </div>
 
-            {/* ── Options editor (select fields only) ── */}
-            {attr.type === 'select' && expandedOptions === attr.id && (
+            {/* ── Options editor — always visible for select fields ── */}
+            {attr.type === 'select' && (
               <div className="px-3 pb-3 border-t border-zinc-800 pt-2.5 space-y-2">
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600 mb-2">
                   Tag Options

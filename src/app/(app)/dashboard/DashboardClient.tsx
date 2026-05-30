@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import TemplateSelector from '@/components/onboarding/TemplateSelector';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import Button from '@/components/ui/Button';
-import { Plus, LogOut, LayoutGrid, Clock, Pencil, Check, X } from 'lucide-react';
+import { Plus, LogOut, LayoutGrid, Clock, Pencil, Check, X, Trash2 } from 'lucide-react';
 
 interface DashboardClientProps {
   initialBoards: Board[];
@@ -39,6 +39,14 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
   };
 
   const cancelRename = () => setRenamingId(null);
+
+  const handleDeleteBoard = async (boardId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Delete this board? This cannot be undone.')) return;
+    setBoards(prev => prev.filter(b => b.id !== boardId));
+    const supabase = createClient();
+    await supabase.from('boards').delete().eq('id', boardId);
+  };
 
   const handleCreateBoard = async (template: BoardTemplate, title: string) => {
     const supabase = createClient();
@@ -141,13 +149,22 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
                       {board.config.view}
                     </span>
                     {renamingId !== board.id && (
-                      <button
-                        onClick={e => startRename(board, e)}
-                        title="Rename workspace"
-                        className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-[#FFDE4D] transition-all cursor-pointer"
-                      >
-                        <Pencil size={11} />
-                      </button>
+                      <>
+                        <button
+                          onClick={e => startRename(board, e)}
+                          title="Rename workspace"
+                          className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-[#FFDE4D] transition-all cursor-pointer"
+                        >
+                          <Pencil size={11} />
+                        </button>
+                        <button
+                          onClick={e => handleDeleteBoard(board.id, e)}
+                          title="Delete board"
+                          className="opacity-0 group-hover:opacity-100 text-zinc-700 hover:text-red-400 transition-all cursor-pointer"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
