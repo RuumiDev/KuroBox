@@ -1,22 +1,42 @@
 # KuroBox — Dynamic Kanban & Table Engine
 
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=flat-square&logo=supabase)
+![Theme](https://img.shields.io/badge/UI--UX-Cyber--Industrial%20%7C%20Pro--Max-FFDE4D?style=flat-square)
+
 > A cyber-industrial workspace for tracking anything — jobs, tasks, projects — with a fully dynamic schema, dual views, and real-time Supabase backend.
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Database Schema](#database-schema)
-- [Project Structure](#project-structure)
-- [Design System](#design-system)
-- [Deployment (Vercel)](#deployment-vercel)
-- [Roadmap](#roadmap)
+- [KuroBox — Dynamic Kanban \& Table Engine](#kurobox--dynamic-kanban--table-engine)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Tech Stack](#tech-stack)
+  - [Architecture](#architecture)
+    - [Key Architectural Decision: Lazy Client Initialization](#key-architectural-decision-lazy-client-initialization)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [1. Clone and Install](#1-clone-and-install)
+    - [2. Set Up Environment Variables](#2-set-up-environment-variables)
+    - [3. Apply the Database Schema](#3-apply-the-database-schema)
+    - [4. Configure Auth](#4-configure-auth)
+    - [5. Run the Dev Server](#5-run-the-dev-server)
+  - [Environment Variables](#environment-variables)
+  - [Database Schema](#database-schema)
+    - [`profiles`](#profiles)
+    - [`boards`](#boards)
+    - [`cards`](#cards)
+  - [Project Structure](#project-structure)
+  - [Design System](#design-system)
+  - [Deployment (Vercel)](#deployment-vercel)
+    - [1. Push to GitHub](#1-push-to-github)
+    - [2. Import to Vercel](#2-import-to-vercel)
+    - [3. Update Supabase Auth URLs](#3-update-supabase-auth-urls)
+  - [Roadmap](#roadmap)
+  - [License](#license)
 
 ---
 
