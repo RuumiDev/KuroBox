@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import TemplateSelector from '@/components/onboarding/TemplateSelector';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import Button from '@/components/ui/Button';
-import { Plus, LogOut, LayoutGrid, Clock } from 'lucide-react';
+import { Plus, LogOut, LayoutGrid, Clock, Pencil, Check, X } from 'lucide-react';
 
 interface DashboardClientProps {
   initialBoards: Board[];
@@ -19,7 +19,26 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
   const [boards, setBoards] = useState<Board[]>(initialBoards);
   const [showNewBoard, setShowNewBoard] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(!!initialUsername);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
   const router = useRouter();
+
+  const startRename = (board: Board, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRenamingId(board.id);
+    setRenameValue(board.title);
+  };
+
+  const commitRename = async (boardId: string) => {
+    const trimmed = renameValue.trim();
+    if (!trimmed) { setRenamingId(null); return; }
+    setBoards(prev => prev.map(b => b.id === boardId ? { ...b, title: trimmed } : b));
+    setRenamingId(null);
+    const supabase = createClient();
+    await supabase.from('boards').update({ title: trimmed }).eq('id', boardId);
+  };
+
+  const cancelRename = () => setRenamingId(null);
 
   const handleCreateBoard = async (template: BoardTemplate, title: string) => {
     const supabase = createClient();
@@ -111,19 +130,56 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {boards.map(board => (
-              <button
+              <div
                 key={board.id}
-                onClick={() => router.push(`/board/${board.id}`)}
-                className="text-left bg-zinc-900 border border-zinc-800 p-5 rounded-sm hover:border-zinc-600 hover:bg-zinc-800/60 transition-all group cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FFDE4D]"
+                className="relative text-left bg-zinc-900 border border-zinc-800 p-5 rounded-sm hover:border-zinc-600 hover:bg-zinc-800/60 transition-all group focus-within:border-zinc-600"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-5 h-5 bg-[#FFDE4D] rounded-sm" />
-                  <span className="text-[10px] font-mono text-zinc-700 group-hover:text-zinc-500 uppercase tracking-widest">
-                    {board.config.view}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono text-zinc-700 group-hover:text-zinc-500 uppercase tracking-widest">
+                      {board.config.view}
+                    </span>
+                    {renamingId !== board.id && (
+                      <button
+                        onClick={e => startRename(board, e)}
+                        title="Rename workspace"
+                        className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-[#FFDE4D] transition-all cursor-pointer"
+                      >
+                        <Pencil size={11} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <h2 className="text-sm font-semibold text-white mb-2 truncate">{board.title}</h2>
-                <div className="flex items-center gap-1.5 text-[10px] text-zinc-700">
+
+                {renamingId === board.id ? (
+                  <div className="flex items-center gap-1.5 mb-2" onClick={e => e.stopPropagation()}>
+                    <input
+                      autoFocus
+                      value={renameValue}
+                      onChange={e => setRenameValue(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') commitRename(board.id);
+                        if (e.key === 'Escape') cancelRename();
+                      }}
+                      className="flex-1 bg-zinc-800 border border-[#FFDE4D] text-white text-sm px-2 py-1 rounded-sm focus:outline-none"
+                    />
+                    <button onClick={() => commitRename(board.id)} className="text-green-400 hover:text-green-300 cursor-pointer"><Check size={14} /></button>
+                    <button onClick={cancelRename} className="text-zinc-600 hover:text-zinc-400 cursor-pointer"><X size={14} /></button>
+                  </div>
+                ) : (
+                  <h2
+                    className="text-sm font-semibold text-white mb-2 truncate cursor-pointer"
+                    onClick={() => router.push(`/board/${board.id}`)}
+                  >
+                    {board.title}
+                  </h2>
+                )}
+
+                <div
+                  className="flex items-center gap-1.5 text-[10px] text-zinc-700 cursor-pointer"
+                  onClick={() => renamingId !== board.id && router.push(`/board/${board.id}`)}
+                >
                   <Clock size={10} />
                   {new Date(board.created_at).toLocaleDateString(undefined, {
                     year: 'numeric',
@@ -131,7 +187,7 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
                     day: 'numeric',
                   })}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         )}
