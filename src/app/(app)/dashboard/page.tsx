@@ -12,11 +12,24 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login');
 
-  const { data: boards } = await supabase
-    .from('boards')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  const [{ data: boards }, { data: profile }] = await Promise.all([
+    supabase
+      .from('boards')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', user.id)
+      .single(),
+  ]);
 
-  return <DashboardClient initialBoards={boards ?? []} userId={user.id} />;
+  return (
+    <DashboardClient
+      initialBoards={boards ?? []}
+      userId={user.id}
+      initialUsername={profile?.username ?? null}
+    />
+  );
 }

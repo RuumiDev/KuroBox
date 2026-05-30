@@ -5,17 +5,20 @@ import { createClient } from '@/lib/supabase/client';
 import { Board, BoardTemplate } from '@/types';
 import { useRouter } from 'next/navigation';
 import TemplateSelector from '@/components/onboarding/TemplateSelector';
+import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import Button from '@/components/ui/Button';
 import { Plus, LogOut, LayoutGrid, Clock } from 'lucide-react';
 
 interface DashboardClientProps {
   initialBoards: Board[];
   userId: string;
+  initialUsername: string | null;
 }
 
-export default function DashboardClient({ initialBoards, userId }: DashboardClientProps) {
+export default function DashboardClient({ initialBoards, userId, initialUsername }: DashboardClientProps) {
   const [boards, setBoards] = useState<Board[]>(initialBoards);
   const [showNewBoard, setShowNewBoard] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(!!initialUsername);
   const router = useRouter();
 
   const handleCreateBoard = async (template: BoardTemplate, title: string) => {
@@ -54,6 +57,13 @@ export default function DashboardClient({ initialBoards, userId }: DashboardClie
   };
 
   return (
+    <>
+      {!onboardingDone && (
+        <OnboardingStepper
+          userId={userId}
+          onComplete={() => setOnboardingDone(true)}
+        />
+      )}
     <div className="min-h-screen bg-black">
       {/* Topbar */}
       <header className="border-b border-zinc-900 px-6 py-4 flex items-center justify-between">
@@ -134,5 +144,6 @@ export default function DashboardClient({ initialBoards, userId }: DashboardClie
         />
       )}
     </div>
+    </>
   );
 }
