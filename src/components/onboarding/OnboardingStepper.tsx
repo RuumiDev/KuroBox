@@ -9,6 +9,7 @@ import StepIdentity from './steps/StepIdentity';
 import StepDataDeck from './steps/StepDataDeck';
 import StepProtocol from './steps/StepProtocol';
 import StepFinalize from './steps/StepFinalize';
+import { BackgroundPattern } from '@/lib/context/ThemeContext';
 
 interface OnboardingStepperProps {
   userId: string;
@@ -18,6 +19,7 @@ interface OnboardingStepperProps {
 interface OnboardingData {
   username: string;
   templateId: TemplateId | null;
+  backgroundPattern: BackgroundPattern;
 }
 
 interface FlashDot {
@@ -48,7 +50,7 @@ export default function OnboardingStepper({ userId, onComplete }: OnboardingStep
   const [submitting, setSubmitting] = useState(false);
   const [showFlashes, setShowFlashes] = useState(false);
   const [flashes] = useState<FlashDot[]>(buildFlashes);
-  const [data, setData] = useState<OnboardingData>({ username: '', templateId: null });
+  const [data, setData] = useState<OnboardingData>({ username: '', templateId: null, backgroundPattern: 'none' });
   const router = useRouter();
 
   const canProceed =
@@ -71,7 +73,7 @@ export default function OnboardingStepper({ userId, onComplete }: OnboardingStep
     // Persist operator tag to profile
     await supabase
       .from('profiles')
-      .upsert({ id: userId, username: trimmed, updated_at: new Date().toISOString() });
+      .upsert({ id: userId, username: trimmed, background_pattern: data.backgroundPattern, updated_at: new Date().toISOString() });
 
     // Create starter board from selected template
     if (template) {
@@ -161,7 +163,12 @@ export default function OnboardingStepper({ userId, onComplete }: OnboardingStep
               onSelect={id => setData(d => ({ ...d, templateId: id }))}
             />
           )}
-          {step === 3 && <StepProtocol />}
+          {step === 3 && (
+            <StepProtocol
+              backgroundPattern={data.backgroundPattern}
+              onPatternChange={p => setData(d => ({ ...d, backgroundPattern: p }))}
+            />
+          )}
           {step === 4 && (
             <StepFinalize
               username={data.username}

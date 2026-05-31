@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, Grid3x3, Dot, Sparkles, Ban } from 'lucide-react';
+import { BackgroundPattern, BACKGROUND_PATTERNS } from '@/lib/context/ThemeContext';
 
 interface CalloutDef {
   id: string;
@@ -41,7 +42,19 @@ const CALLOUTS: CalloutDef[] = [
   },
 ];
 
-export default function StepProtocol() {
+const PATTERN_ICONS: Record<BackgroundPattern, React.ReactNode> = {
+  none:  <Ban size={14} />,
+  grid:  <Grid3x3 size={14} />,
+  dots:  <Dot size={14} />,
+  noise: <Sparkles size={14} />,
+};
+
+interface StepProtocolProps {
+  backgroundPattern: BackgroundPattern;
+  onPatternChange: (p: BackgroundPattern) => void;
+}
+
+export default function StepProtocol({ backgroundPattern, onPatternChange }: StepProtocolProps) {
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
@@ -176,6 +189,35 @@ export default function StepProtocol() {
             {active.label}
           </div>
           <p className="text-[11px] text-zinc-400 leading-relaxed">{active.description}</p>
+        </div>
+      </div>
+
+      {/* ── Canvas Wallpaper Preset selector ── */}
+      <div className="mb-4">
+        <div className="flex items-center gap-1.5 mb-2">
+          <Zap size={11} className="text-zinc-600" />
+          <span className="font-mono text-[9px] text-zinc-600 uppercase tracking-widest">
+            CANVAS WALLPAPER PRESET
+          </span>
+        </div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {BACKGROUND_PATTERNS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => onPatternChange(p.id)}
+              className={[
+                'flex flex-col items-center gap-1 px-2 py-2.5 rounded-sm border transition-all cursor-pointer text-center',
+                backgroundPattern === p.id
+                  ? 'border-[#FFDE4D] text-[#FFDE4D] bg-[#FFDE4D]/5'
+                  : 'border-zinc-800 text-zinc-600 hover:border-zinc-600 hover:text-zinc-400 bg-zinc-900/50',
+              ].join(' ')}
+            >
+              {PATTERN_ICONS[p.id]}
+              <span className="font-mono text-[8px] uppercase tracking-wider leading-tight">
+                {p.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 

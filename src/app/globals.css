@@ -111,6 +111,47 @@ html[data-theme="whiteout"] .text-zinc-700 { color: #3f3f46; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   CANVAS WALLPAPER BACKGROUND PRESETS
+   Applied via html[data-pattern="X"] attribute (ThemeContext)
+══════════════════════════════════════════════════════════════════ */
+
+/* Matrix Grid — technical graph grid */
+html[data-pattern="grid"] body {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.032) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.032) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Dot Matrix — retro terminal dots */
+html[data-pattern="dots"] body {
+  background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Subtle Static — film grain noise layer */
+html[data-pattern="noise"] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* White-Out theme: invert pattern brightness for light canvas */
+html[data-theme="whiteout"][data-pattern="grid"] body {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+html[data-theme="whiteout"][data-pattern="dots"] body {
+  background-image: radial-gradient(rgba(0,0,0,0.09) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+html[data-theme="whiteout"][data-pattern="noise"] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
    CRUD COMMIT BORDER-FLASH  (300 ms, uses active theme accent)
 ══════════════════════════════════════════════════════════════════ */
 @keyframes border-flash {

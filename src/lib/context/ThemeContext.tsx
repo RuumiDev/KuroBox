@@ -58,18 +58,39 @@ export const THEME_PROFILES: ThemeProfile[] = [
   },
 ];
 
+// ── Background pattern ────────────────────────────────────────────────────────
+
+export type BackgroundPattern = 'none' | 'grid' | 'dots' | 'noise';
+
+export const BACKGROUND_PATTERNS: { id: BackgroundPattern; label: string; description: string }[] = [
+  { id: 'none',  label: 'None',          description: 'Flat digital black' },
+  { id: 'grid',  label: 'Matrix Grid',   description: 'Technical graph grid overlay' },
+  { id: 'dots',  label: 'Dot Matrix',    description: 'Retro terminal dot array' },
+  { id: 'noise', label: 'Subtle Static', description: 'Film grain noise layer' },
+];
+
+const PATTERN_STORAGE_KEY = 'kurobox-bg-pattern';
+
+function applyPatternToDOM(p: BackgroundPattern) {
+  document.documentElement.setAttribute('data-pattern', p);
+}
+
 // ── Context ───────────────────────────────────────────────────────────────────
 
 interface ThemeContextValue {
   theme: ThemeId;
   profile: ThemeProfile;
   setTheme: (id: ThemeId) => void;
+  backgroundPattern: BackgroundPattern;
+  setBackgroundPattern: (p: BackgroundPattern) => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: 'stealth',
   profile: THEME_PROFILES[0],
   setTheme: () => {},
+  backgroundPattern: 'none',
+  setBackgroundPattern: async () => {},
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -95,6 +116,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return resolveTheme(window.localStorage.getItem(STORAGE_KEY));
   });
 
+  const [backgroundPattern, setBgPatternState] = useState<BackgroundPattern>(() => {
+    if (typeof window === 'undefined') return 'none';
+    const stored = window.localStorage.getItem(PATTERN_STORAGE_KEY);
+    return (stored === 'grid' || stored === 'dots' || stored === 'noise') ? stored : 'none';
+  });
+
   // On mount: sync from Supabase user_metadata for cross-device consistency.
   useEffect(() => {
     const syncFromServer = async () => {
@@ -106,6 +133,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           setThemeState(serverTheme);
           applyThemeToDOM(serverTheme);
           localStorage.setItem(STORAGE_KEY, serverTheme);
+        }
+        // Sync background_pattern from profiles table
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('background_pattern')
+            .eq('id', user.id)
+            .single();
+          if (profile?.background_pattern) {
+            const p = profile.background_pattern as BackgroundPattern;
+            setBgPatternState(p);
+            applyPatternToDOM(p);
+            localStorage.setItem(PATTERN_STORAGE_KEY, p);
+          }
         }
       } catch {
         // Non-critical — localStorage is the source of truth.
@@ -132,10 +173,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setBackgroundPattern = useCallback(async (p: BackgroundPattern) => {
+    setBgPatternState(p);
+    applyPatternToDOM(p);
+    localStorage.setItem(PATTERN_STORAGE_KEY, p);
+
+    // Persist to profiles table (canonical cross-device store).
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('profiles')
+          .upsert({ id: user.id, background_pattern: p, updated_at: new Date().toISOString() });
+      }
+    } catch {
+      // Non-critical.
+    }
+  }, []);
+
   const profile = THEME_PROFILES.find(p => p.id === theme) ?? THEME_PROFILES[0];
 
   return (
-    <ThemeContext.Provider value={{ theme, profile, setTheme }}>
+    <ThemeContext.Provider value={{ theme, profile, setTheme, backgroundPattern, setBackgroundPattern }}>
       {children}
     </ThemeContext.Provider>
   );

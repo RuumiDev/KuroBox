@@ -18,13 +18,29 @@ function isFinancial(name: string): boolean {
 
 function formatDate(val: string): string {
   try {
-    // Treat as local date by appending midnight in local time
     const d = new Date(val + 'T00:00:00');
     if (isNaN(d.getTime())) return val;
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
   } catch {
     return val;
   }
+}
+
+// ── Status-based semantic border tint ─────────────────────────────────────────
+// Uses hardcoded semantic colors (not theme accent) so tints remain readable
+// across all 4 theme engines (stealth, radiation, overdrive, whiteout).
+function getStatusBorder(status: string): string {
+  const s = status.toLowerCase();
+  if (s.includes('interview') || s.includes('screen') || s.includes('assess'))
+    return 'border-violet-500/25';
+  if (s.includes('offer') || s.includes('accept') || s.includes('hired'))
+    return 'border-emerald-500/25';
+  if (s.includes('reject') || s.includes('decline') || s.includes('closed') || s.includes('fail'))
+    return 'border-red-500/30';
+  if (s.includes('view') || s.includes('seen') || s.includes('read') || s.includes('contact'))
+    return 'border-sky-500/20';
+  // Default: neutral zinc border
+  return 'border-zinc-800';
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -51,6 +67,8 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
     .filter(a => a.id !== titleAttr?.id)
     .slice(0, 5);
 
+  const statusBorder = getStatusBorder(card.status);
+
   return (
     <Draggable draggableId={card.id} index={index}>
       {(provided, snapshot) => (
@@ -66,7 +84,7 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
             'focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--kb-accent)]',
             snapshot.isDragging
               ? 'scale-[1.01] rotate-1 shadow-[3px_3px_0px_var(--kb-accent)] border-[var(--kb-accent)]/40 z-50'
-              : 'border-zinc-800',
+              : statusBorder,
           ].join(' ')}
         >
           {/* Primary title */}
@@ -77,7 +95,7 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
           {/* Data matrix badges */}
           {previewAttrs.length > 0 && (
             <div
-              className="flex flex-col gap-1.5 mt-2.5"
+              className="flex flex-col gap-1 mt-2.5"
               onClick={e => e.stopPropagation()}
             >
               {previewAttrs.map(attr => {
@@ -89,7 +107,7 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
                   return (
                     <span
                       key={attr.id}
-                      className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400 border border-zinc-800 bg-zinc-800/40 px-1.5 py-0.5 rounded-sm w-fit font-mono"
+                      className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400 bg-zinc-800/30 px-1.5 py-0.5 rounded-sm w-fit font-mono"
                     >
                       <Calendar size={9} className="text-zinc-600 shrink-0" />
                       {formatDate(value as string)}
@@ -97,12 +115,12 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
                   );
                 }
 
-                /* ── FINANCIAL — high-vis geometric box ── */
+                /* ── FINANCIAL — subtle accent tint box ── */
                 if (isFinancial(attr.name) && value) {
                   return (
                     <span
                       key={attr.id}
-                      className="inline-flex items-center text-[10px] font-mono font-semibold text-[var(--kb-accent)] border border-[var(--kb-accent)]/30 bg-[var(--kb-accent)]/5 px-2 py-0.5 rounded-sm w-fit tracking-wide"
+                      className="inline-flex items-center text-[10px] font-mono font-semibold text-[var(--kb-accent)] bg-[var(--kb-accent)]/8 px-2 py-0.5 rounded-sm w-fit tracking-wide"
                     >
                       {value as string}
                     </span>
@@ -117,7 +135,6 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
                   const hasMore = text.length > 80;
 
                   if (!text) return null;
-
                   return (
                     <div key={attr.id}>
                       <button
@@ -154,13 +171,13 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
                   );
                 }
 
-                /* ── SELECT — tag chip ── */
+                /* ── SELECT — subtle tag chip (no harsh border) ── */
                 if (attr.type === 'select') {
                   if (!value) return null;
                   return (
                     <span
                       key={attr.id}
-                      className="inline-flex items-center text-[10px] bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded-sm w-fit"
+                      className="inline-flex items-center text-[10px] bg-zinc-800/60 text-zinc-400 px-1.5 py-0.5 rounded-sm w-fit"
                     >
                       {value as string}
                     </span>

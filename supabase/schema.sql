@@ -121,3 +121,14 @@ BEGIN
         AND status = old_status;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================================
+-- v2.5 OVERHAUL MIGRATIONS
+-- Run these in the Supabase SQL editor if upgrading an existing DB.
+-- ============================================================
+
+-- Profiles: background canvas preset preference
+ALTER TABLE profiles
+    ADD COLUMN IF NOT EXISTS background_pattern TEXT
+    CHECK (background_pattern IN ('none', 'grid', 'dots', 'noise'))
+    DEFAULT 'none';

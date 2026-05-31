@@ -12,6 +12,7 @@ import UniversalImporter from '@/components/importer/UniversalImporter';
 import CardModal from '@/components/CardModal';
 import ViewToggle from '@/components/ViewToggle';
 import Button from '@/components/ui/Button';
+import FilterToolbar, { ActiveFilter } from '@/components/FilterToolbar';
 import { ArrowLeft, Settings, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { ImportResult } from '@/lib/utils/importers';
@@ -33,6 +34,28 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
   const [showSchema, setShowSchema] = useState(false);
   const [showImporter, setShowImporter] = useState(false);
   const [deletingColumn, setDeletingColumn] = useState<string | null>(null);
+
+  // ── Filter state ───────────────────────────────────────────────────────────
+  const [filterText, setFilterText] = useState('');
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+
+  const filteredCards = cards.filter(card => {
+    // Text search: scan title field and all string attribute values
+    if (filterText.trim()) {
+      const q = filterText.toLowerCase();
+      const allText = Object.values(card.attributes_data)
+        .filter(v => typeof v === 'string')
+        .join(' ')
+        .toLowerCase();
+      if (!allText.includes(q)) return false;
+    }
+    // Tag filters: every active filter must match (AND logic)
+    for (const f of activeFilters) {
+      const cardVal = card.attributes_data[f.attrId] as string | undefined;
+      if (cardVal !== f.value) return false;
+    }
+    return true;
+  });
 
   // Prefer live hook data, fall back to initial server data
   const currentBoard = board ?? initialBoard;
@@ -143,12 +166,29 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
         </div>
       </header>
 
-      {/* ── Board content ────────────────────────────── */}
+      {/* ── Active filter toolbar ─────────────────────────────── */}
+      <FilterToolbar
+        schema={currentBoard.schema_definition.attributes}
+        cards={cards}
+        filterText={filterText}
+        activeFilters={activeFilters}
+        onFilterTextChange={setFilterText}
+        onAddFilter={f => setActiveFilters(prev => {
+          const exists = prev.some(p => p.attrId === f.attrId && p.value === f.value);
+          return exists ? prev : [...prev, f];
+        })}
+        onRemoveFilter={(attrId, value) =>
+          setActiveFilters(prev => prev.filter(f => !(f.attrId === attrId && f.value === value)))
+        }
+        onClearAll={() => { setFilterText(''); setActiveFilters([]); }}
+      />
+
+      {/* ── Board content ────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 overflow-hidden p-4">
         {view === 'kanban' ? (
           <KanbanBoard
             board={currentBoard}
-            cards={cards}
+            cards={filteredCards}
             onCardClick={setActiveCard}
             onMoveCard={moveCard}
             onCreateCard={status => createCard(status)}
@@ -157,7 +197,7 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
           <div className="h-full overflow-y-auto scrollbar-thin">
             <TableView
               board={currentBoard}
-              cards={cards}
+              cards={filteredCards}
               onUpdateCard={updateCard}
               onDeleteCard={deleteCard}
               onAddCard={() => createCard(getFirstColumn())}
