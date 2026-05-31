@@ -5,6 +5,7 @@
 ![Theme](https://img.shields.io/badge/Themes-4%20Profiles%20%7C%20Cyber--Industrial-FFDE4D?style=flat-square)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)
+![Version](https://img.shields.io/badge/Version-2.5-FFDE4D?style=flat-square)
 
 > A cyber-industrial workspace for tracking anything — jobs, tasks, projects — with a fully dynamic schema, dual views, 4-profile theme engine, and real-time Supabase backend.
 
@@ -13,6 +14,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [What's New](#whats-new)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
@@ -35,21 +37,52 @@ Built for speed and extensibility: spin up a "Job Tracker", a "Sprint Board", or
 
 ---
 
+## What's New
+
+### v2.5 — UI/UX & Functional Overhaul
+
+| Area | Change |
+|---|---|
+| **Kanban card borders** | Status-based semantic outer outlines — Interview → violet, Offer → emerald, Rejected → crimson, all at low opacity across all 4 themes |
+| **Kanban card tints** | Inner attribute boxes replaced with subtle ambient tints — no harsh inner borders |
+| **Table slab layout** | Rows are now floating structural slabs (`border-separate border-spacing-y-1.5` + `rounded-md`) — collapsible by status group |
+| **Double-click edit cells** | Table cells render clean display mode by default; double-click activates a bordered input/select, `onBlur` returns to display |
+| **Canvas wallpaper presets** | Three faint background patterns (Matrix Grid, Dot Matrix, Subtle Static) chosen in onboarding, persisted to `profiles.background_pattern` |
+| **Badge filter toolbar** | Unified filter bar beneath the board header: text search + tag popover + active badge tokens with ✕ clear — works across both views |
+| **Dashboard Command Center** | Rebuilt into an operational control panel: 4 metric widgets, board list with pipeline progress bars, live Activity Log feed |
+
+### v2.0 — Pro-Max Architecture
+
+| Area | Change |
+|---|---|
+| **View synchronicity** | Table status column writes to shared `cards` state — changes instantly reflect in Kanban and vice versa |
+| **Kanban height fix** | Columns use `flex-1 min-h-0` + `overflow-y-auto` — each column scrolls independently, no viewport overflow |
+| **Cyber-industrial visuals** | `.bg-cyber-grid` canvas, `border-flash` CRUD animation, data-matrix badges on Kanban cards |
+| **Draggable schema reorder** | Fields in SchemaManager are drag-reorderable; position-0 field becomes the Kanban card title |
+| **Pipeline column CRUD** | Add, rename, delete columns from SchemaManager; delete triggers a reallocation modal (migrate or destroy with countdown + confirm) |
+
+---
+
 ## Features
 
 | Feature | Description |
 |---|---|
-| **Dual views** | Toggle between Kanban (drag-and-drop columns) and Table (spreadsheet with inline editing) |
-| **Dynamic schema** | Add, rename, reorder, hide, or delete fields per board — text, select, date, URL, markdown, attachment |
+| **Dual views** | Toggle between Kanban (drag-and-drop columns) and Table (slab layout with double-click inline editing) |
+| **Dynamic schema** | Add, rename, drag-reorder, hide, or delete fields per board — text, select, date, URL, markdown, attachment |
+| **Pipeline column CRUD** | Add, rename, delete status columns; delete triggers migrate-or-destroy reallocation modal |
 | **Board templates** | "Job Tracking", "Task Board", and "Blank Canvas" — pre-configured schemas with one click |
-| **Board CRUD** | Create, rename (inline), and delete boards from the dashboard |
-| **Card detail modal** | Glassmorphism overlay with status pills, all field editors, and delete |
-| **Schema Manager** | Dedicated UI to manage field names, types, visibility, and tag options (always-visible option editor for `select` fields) |
+| **Board CRUD** | Create, rename (inline), and delete boards from the Command Center dashboard |
+| **Card detail modal** | Full overlay with status pills, all field editors, and delete |
+| **Schema Manager** | Two-tab UI: Data Fields (draggable, position-0 = Kanban card title) and Pipeline Columns |
 | **Universal Importer** | Drag-drop CSV or Markdown files to import cards in bulk |
+| **Badge filter toolbar** | Text search + multi-select tag filter popover + active badge tokens with instant clear — works across both views |
+| **Status-based card outlines** | Kanban cards receive semantic low-opacity border tints based on pipeline status |
+| **Canvas wallpaper presets** | Three background patterns (Grid, Dots, Noise) chosen in onboarding, persisted to Supabase `profiles` |
+| **Command Center dashboard** | Metrics widgets + per-board pipeline progress bars + chronological Activity Log feed |
 | **4-Profile ThemeController** | Stealth · Radiation · Overdrive · White-Out — CSS custom property themes with localStorage + Supabase cross-device sync |
 | **Anti-flicker themes** | Inline `<script>` in root layout reads localStorage before first paint — zero flash on reload |
 | **Auth** | Email/password signup + **Google OAuth** via Supabase Auth |
-| **Onboarding Stepper** | 4-step wizard (profile → templates → schema preview → launch) for first-time users |
+| **Onboarding Stepper** | 4-step wizard (profile → templates → workspace overview + wallpaper picker → launch) |
 | **RLS** | Row-Level Security — each user only sees their own boards and cards |
 | **Optimistic UI** | Local state updates instantly on mutation, background DB sync |
 
@@ -215,17 +248,18 @@ Open [http://localhost:3000](http://localhost:3000). First-time users go through
 |---|---|---|
 | `id` | `uuid` | FK → `auth.users.id` |
 | `username` | `text` | Set during onboarding |
-| `email` | `text` | |
-| `created_at` | `timestamptz` | |
+| `background_pattern` | `text` | Canvas wallpaper preset: `none` \| `grid` \| `dots` \| `noise` (v2.5) |
+| `updated_at` | `timestamptz` | |
 
 ### `boards`
 | Column | Type | Notes |
 |---|---|---|
 | `id` | `uuid` | PK |
-| `user_id` | `uuid` | FK → `auth.users.id` |
+| `user_id` | `uuid` | FK → `profiles.id` |
 | `title` | `text` | Board display name |
-| `config` | `jsonb` | View, column order, visible attributes |
-| `schema_definition` | `jsonb` | Full field schema (types, options, order) |
+| `config` | `jsonb` | View, `column_order[]`, visible attributes |
+| `schema_definition` | `jsonb` | Full field schema (types, options, drag order) |
+| `pipeline_columns` | `jsonb` | Dedicated column sequence store (added v2.0) |
 | `created_at` | `timestamptz` | |
 
 ### `cards`
@@ -233,11 +267,12 @@ Open [http://localhost:3000](http://localhost:3000). First-time users go through
 |---|---|---|
 | `id` | `uuid` | PK |
 | `board_id` | `uuid` | FK → `boards.id` |
-| `title` | `text` | Card headline |
-| `content` | `jsonb` | Dynamic attribute values keyed by field ID |
-| `status` | `text` | Maps to a status in `boards.config.column_order` |
-| `position` | `integer` | Sort order within a status column |
+| `status` | `text` | Maps to a value in `config.column_order` (NOT NULL) |
+| `sort_order` | `integer` | Position within a status column |
+| `schema_layout_order` | `integer` | Reserved for future field render ordering (added v2.0) |
+| `attributes_data` | `jsonb` | Dynamic field values keyed by `AttributeField.id` |
 | `created_at` | `timestamptz` | |
+| `updated_at` | `timestamptz` | Updated on every mutation — drives the Activity Log feed |
 
 ---
 
@@ -263,22 +298,26 @@ src/
 │   └── page.tsx                        → Redirects to /dashboard
 │
 ├── components/
-│   ├── ui/                             → Button (semantic kb-accent tokens), Modal, Badge
+│   ├── ui/                             → Button, Modal, Badge
 │   ├── navigation/
 │   │   └── ThemeSelector.tsx           → Dropdown theme switcher (topbar)
-│   ├── kanban/                         → KanbanBoard, KanbanColumn, KanbanCard
-│   ├── table/                          → TableView, TableCell
-│   ├── schema/                         → SchemaManager (always-visible tag option editor)
+│   ├── kanban/                         → KanbanBoard, KanbanColumn, KanbanCard (status borders)
+│   ├── table/                          → TableView (slab layout), TableCell (double-click edit)
+│   ├── schema/
+│   │   ├── SchemaManager.tsx           → Two-tab: Data Fields (draggable) + Pipeline Columns
+│   │   └── ColumnReallocationModal.tsx → Migrate-or-destroy modal for column deletion
 │   ├── importer/                       → UniversalImporter (CSV + Markdown)
 │   ├── onboarding/
-│   │   ├── OnboardingStepper.tsx       → 4-step first-run wizard
-│   │   └── TemplateSelector.tsx        → Board template picker
+│   │   ├── OnboardingStepper.tsx       → 4-step wizard (saves backgroundPattern on finalize)
+│   │   ├── TemplateSelector.tsx        → Board template picker
+│   │   └── steps/StepProtocol.tsx      → Workspace overview + canvas wallpaper preset picker
+│   ├── FilterToolbar.tsx               → Text search + tag filter popover + active badge tokens
 │   ├── CardModal.tsx                   → Card detail overlay
 │   └── ViewToggle.tsx                  → Kanban / Table switcher
 │
 ├── lib/
 │   ├── context/
-│   │   └── ThemeContext.tsx            → ThemeProvider, useTheme, THEME_PROFILES
+│   │   └── ThemeContext.tsx            → ThemeProvider, useTheme, THEME_PROFILES, backgroundPattern + setBackgroundPattern
 │   ├── hooks/
 │   │   ├── useBoard.ts                 → Board CRUD + optimistic state
 │   │   └── useCards.ts                 → Card CRUD + optimistic state
@@ -360,8 +399,7 @@ These are known limitations in the current implementation. They are not bugs —
 ### UI & Responsiveness
 - **White-Out theme** has partial coverage — deep components (drag handles, kanban column headers, modal overlays) may retain residual dark styling not yet overridden by CSS vars.
 - **No mobile drag-and-drop** — `@hello-pangea/dnd` uses mouse events. Kanban drag on touch screens is non-functional.
-- **No board-level search or filter** — Cards can only be browsed visually; no full-text search or attribute-based filtering.
-- **Schema Manager has no field reordering** — Fields can be toggled visible/hidden but their order in the schema array is insertion order only.
+- **Filter is client-side only** — The badge filter toolbar scans in-memory cards. It does not use Postgres `tsvector`; very large boards (1000+ cards) may see latency.
 
 ### Performance
 - **`force-dynamic` on all app routes** — Disables static generation for `/dashboard` and `/board/*`, increasing cold-start latency on Vercel Edge.
@@ -375,16 +413,21 @@ These are known limitations in the current implementation. They are not bugs —
 Items are grouped by priority tier. ✅ = shipped, 🔲 = planned.
 
 ### Tier 1 — High Impact, Low Complexity
-- 🔲 **Board-level search** — full-text search across card titles and content using PostgreSQL `tsvector`
-- 🔲 **Card filtering + sorting** — filter by status, date range, field value; sort by any column in Table view
+- ✅ **Badge filter toolbar** — text search + multi-select tag filter across both views (v2.5)
+- ✅ **Schema field drag reordering** — position-0 = Kanban card title (v2.0)
+- ✅ **Pipeline column CRUD** — add, rename, delete with migrate/destroy reallocation (v2.0)
+- 🔲 **Server-side full-text search** — PostgreSQL `tsvector` for boards with 1000+ cards
+- 🔲 **Column sort in Table view** — sort rows by clicking any column header
 - 🔲 **CSV / JSON export** — download a board's cards as a flat file
 - 🔲 **Password reset flow** — "Forgot password" email with Supabase `resetPasswordForEmail`
-- 🔲 **Schema field reordering** — drag-and-drop in SchemaManager to change field display order
-- 🔲 **Kanban position persistence** — write `position` to DB on drag-end so column order survives reload
+- 🔲 **Kanban position persistence** — write `sort_order` to DB on drag-end so order survives reload
 
 ### Tier 2 — Core Product Expansion
-- 🔲 **File attachment uploads** — Supabase Storage bucket wired to the `attachment` field type with presigned URL previews
-- 🔲 **Card comments / activity log** — threaded comments per card stored in a `card_events` table with user attribution
+- ✅ **Activity log feed** — live chronological card mutation log on the dashboard (v2.5)
+- ✅ **Operational metrics** — board count, total cards, active pipelines, completion rate (v2.5)
+- ✅ **Canvas wallpaper presets** — Grid, Dots, Noise — persisted to Supabase `profiles` (v2.5)
+- 🔲 **File attachment uploads** — Supabase Storage bucket wired to the `attachment` field type
+- 🔲 **Card comments** — threaded comments per card in a `card_events` table
 - 🔲 **Board duplication** — clone a board with its schema and optionally its cards
 - 🔲 **Keyboard shortcuts** — `N` new card, `E` edit card, `/` search, `1`/`2` switch view, `T` cycle theme
 - 🔲 **Pagination / virtual scroll** — cursor-based pagination for boards with 500+ cards
