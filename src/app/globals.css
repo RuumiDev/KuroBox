@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
 
 /* ══════════════════════════════════════════════════════════════════
    THEME CUSTOM PROPERTIES
-   01: Stealth  |  02: Radiation  |  03: Overdrive  |  04: White-Out
+   01: Stealth  |  02: Radiation  |  03: Overdrive
+   04: Sakura   |  05: Matcha    |  06: Shinto    |  07: Panel-X
 ══════════════════════════════════════════════════════════════════ */
 
 :root,
@@ -56,34 +57,68 @@ html[data-theme="overdrive"] {
   color-scheme: dark;
 }
 
-html[data-theme="whiteout"] {
-  --kb-bg:            #ffffff;
-  --kb-surface:       #f4f4f5;
-  --kb-surface-alt:   #e4e4e7;
-  --kb-border:        #e4e4e7;
-  --kb-border-subtle: #d4d4d8;
-  --kb-accent:        #09090b;
-  --kb-accent-hover:  #27272a;
+/* ── SOFT LIGHT PALETTE ─────────────────────────────────────────── */
+
+html[data-theme="sakura"] {
+  --kb-bg:            #FAF5F5;
+  --kb-surface:       #F0E8EA;
+  --kb-surface-alt:   #E6D8DC;
+  --kb-border:        #D8C8CC;
+  --kb-border-subtle: #E4D4D8;
+  --kb-accent:        #C05674;
+  --kb-accent-hover:  #D0687E;
   --kb-accent-fg:     #ffffff;
-  --kb-text:          #09090b;
-  --kb-text-muted:    #52525b;
-  --kb-text-dim:      #a1a1aa;
+  --kb-text:          #1A0A10;
+  --kb-text-muted:    #7A5060;
+  --kb-text-dim:      #C8A8B0;
   color-scheme: light;
 }
 
-html[data-theme="panel-x"] {
-  --kb-bg:            #0c0c0d;
-  --kb-surface:       #141416;
-  --kb-surface-alt:   #1c1c1f;
-  --kb-border:        #2e1a22;
-  --kb-border-subtle: #1f141a;
-  --kb-accent:        #E8003D;
-  --kb-accent-hover:  #ff1a52;
+html[data-theme="matcha"] {
+  --kb-bg:            #F5F7F5;
+  --kb-surface:       #E8EEE8;
+  --kb-surface-alt:   #D8E4D8;
+  --kb-border:        #C4D4C4;
+  --kb-border-subtle: #D4E0D4;
+  --kb-accent:        #3A6645;
+  --kb-accent-hover:  #4A7855;
   --kb-accent-fg:     #ffffff;
-  --kb-text:          #f0f0f0;
-  --kb-text-muted:    #7a6470;
-  --kb-text-dim:      #3a2830;
-  color-scheme: dark;
+  --kb-text:          #0A180C;
+  --kb-text-muted:    #507055;
+  --kb-text-dim:      #A8C0AA;
+  color-scheme: light;
+}
+
+html[data-theme="shinto"] {
+  --kb-bg:            #F4F6F9;
+  --kb-surface:       #E6EBF4;
+  --kb-surface-alt:   #D6DFEE;
+  --kb-border:        #C4D0E4;
+  --kb-border-subtle: #D0DCF0;
+  --kb-accent:        #3D5080;
+  --kb-accent-hover:  #4D6090;
+  --kb-accent-fg:     #ffffff;
+  --kb-text:          #0A1020;
+  --kb-text-muted:    #50608A;
+  --kb-text-dim:      #A0B0D0;
+  color-scheme: light;
+}
+
+/* ── PANEL-X: Manga / Comic Book Gray ──────────────────────────── */
+
+html[data-theme="panel-x"] {
+  --kb-bg:            #EFEFEF;
+  --kb-surface:       #E2E2E2;
+  --kb-surface-alt:   #D4D4D4;
+  --kb-border:        #1A1A1A;
+  --kb-border-subtle: #3A3A3A;
+  --kb-accent:        #1A1A1A;
+  --kb-accent-hover:  #3A3A3A;
+  --kb-accent-fg:     #EFEFEF;
+  --kb-text:          #0A0A0A;
+  --kb-text-muted:    #444444;
+  --kb-text-dim:      #888888;
+  color-scheme: light;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -108,48 +143,98 @@ html .focus-visible\:ring-\[\#FFDE4D\]:focus-visible { --tw-ring-color: var(--kb
 html .ring-\[\#FFDE4D\]                              { --tw-ring-color: var(--kb-accent); }
 html .from-\[\#FFDE4D\]                              { --tw-gradient-from: var(--kb-accent); }
 
-/* White-Out: invert text-white / muted text to be readable on light bg */
-html[data-theme="whiteout"] .text-white    { color: var(--kb-text); }
-html[data-theme="whiteout"] .text-zinc-200 { color: #27272a; }
-html[data-theme="whiteout"] .text-zinc-300 { color: #3f3f46; }
-html[data-theme="whiteout"] .text-zinc-400 { color: #52525b; }
-html[data-theme="whiteout"] .text-zinc-500 { color: #71717a; }
-html[data-theme="whiteout"] .text-zinc-600 { color: #52525b; }
-html[data-theme="whiteout"] .text-zinc-700 { color: #3f3f46; }
-/* Fix dark UI elements in White-Out */
-html[data-theme="whiteout"] .bg-zinc-950   { background-color: #ececed; }
-html[data-theme="whiteout"] .border-zinc-700 { border-color: #a1a1aa; }
-html[data-theme="whiteout"] .text-green-400 { color: #16a34a; }
-html[data-theme="whiteout"] .text-green-500 { color: #15803d; }
-/* Fix kanban card badge tints on light background */
-html[data-theme="whiteout"] .bg-zinc-800\/30 { background-color: rgba(0,0,0,0.05); }
-html[data-theme="whiteout"] .bg-zinc-800\/60 { background-color: rgba(0,0,0,0.10); }
-/* Fix modal/overlay backdrops — they go full-white on White-Out */
-html[data-theme="whiteout"] .bg-black\/90   { background-color: rgba(255,255,255,0.94) !important; }
-html[data-theme="whiteout"] .bg-black\/80   { background-color: rgba(255,255,255,0.88) !important; }
-/* Drag handle dots + borders in kanban column headers */
-html[data-theme="whiteout"] .text-zinc-800  { color: #71717a; }
+/* ── Light theme overrides: invert hardcoded dark text/bg classes ── */
+html[data-theme="sakura"] .text-white,
+html[data-theme="matcha"] .text-white,
+html[data-theme="shinto"] .text-white,
+html[data-theme="panel-x"] .text-white   { color: var(--kb-text); }
 
-/* Panel-X: bold display typography for headings and UI labels */
+html[data-theme="sakura"] .text-zinc-200,
+html[data-theme="matcha"] .text-zinc-200,
+html[data-theme="shinto"] .text-zinc-200,
+html[data-theme="panel-x"] .text-zinc-200 { color: #27272a; }
+
+html[data-theme="sakura"] .text-zinc-300,
+html[data-theme="matcha"] .text-zinc-300,
+html[data-theme="shinto"] .text-zinc-300,
+html[data-theme="panel-x"] .text-zinc-300 { color: #3f3f46; }
+
+html[data-theme="sakura"] .text-zinc-400,
+html[data-theme="matcha"] .text-zinc-400,
+html[data-theme="shinto"] .text-zinc-400,
+html[data-theme="panel-x"] .text-zinc-400 { color: #52525b; }
+
+html[data-theme="sakura"] .text-zinc-500,
+html[data-theme="matcha"] .text-zinc-500,
+html[data-theme="shinto"] .text-zinc-500,
+html[data-theme="panel-x"] .text-zinc-500 { color: #71717a; }
+
+html[data-theme="sakura"] .text-zinc-600,
+html[data-theme="matcha"] .text-zinc-600,
+html[data-theme="shinto"] .text-zinc-600,
+html[data-theme="panel-x"] .text-zinc-600 { color: #52525b; }
+
+html[data-theme="sakura"] .text-zinc-700,
+html[data-theme="matcha"] .text-zinc-700,
+html[data-theme="shinto"] .text-zinc-700,
+html[data-theme="panel-x"] .text-zinc-700 { color: #3f3f46; }
+
+html[data-theme="sakura"] .text-zinc-800,
+html[data-theme="matcha"] .text-zinc-800,
+html[data-theme="shinto"] .text-zinc-800,
+html[data-theme="panel-x"] .text-zinc-800 { color: #71717a; }
+
+html[data-theme="sakura"] .bg-zinc-950,
+html[data-theme="matcha"] .bg-zinc-950,
+html[data-theme="shinto"] .bg-zinc-950,
+html[data-theme="panel-x"] .bg-zinc-950   { background-color: #ececed; }
+
+html[data-theme="sakura"] .border-zinc-700,
+html[data-theme="matcha"] .border-zinc-700,
+html[data-theme="shinto"] .border-zinc-700,
+html[data-theme="panel-x"] .border-zinc-700 { border-color: #a1a1aa; }
+
+html[data-theme="sakura"] .text-green-400,
+html[data-theme="matcha"] .text-green-400,
+html[data-theme="shinto"] .text-green-400,
+html[data-theme="panel-x"] .text-green-400 { color: #16a34a; }
+
+html[data-theme="sakura"] .text-green-500,
+html[data-theme="matcha"] .text-green-500,
+html[data-theme="shinto"] .text-green-500,
+html[data-theme="panel-x"] .text-green-500 { color: #15803d; }
+
+html[data-theme="sakura"] .bg-zinc-800\/30,
+html[data-theme="matcha"] .bg-zinc-800\/30,
+html[data-theme="shinto"] .bg-zinc-800\/30,
+html[data-theme="panel-x"] .bg-zinc-800\/30 { background-color: rgba(0,0,0,0.05); }
+
+html[data-theme="sakura"] .bg-zinc-800\/60,
+html[data-theme="matcha"] .bg-zinc-800\/60,
+html[data-theme="shinto"] .bg-zinc-800\/60,
+html[data-theme="panel-x"] .bg-zinc-800\/60 { background-color: rgba(0,0,0,0.10); }
+
+/* Modal/overlay backdrops on light themes */
+html[data-theme="sakura"] .bg-black\/90,
+html[data-theme="matcha"] .bg-black\/90,
+html[data-theme="shinto"] .bg-black\/90,
+html[data-theme="panel-x"] .bg-black\/90   { background-color: rgba(255,255,255,0.92) !important; }
+
+html[data-theme="sakura"] .bg-black\/80,
+html[data-theme="matcha"] .bg-black\/80,
+html[data-theme="shinto"] .bg-black\/80,
+html[data-theme="panel-x"] .bg-black\/80   { background-color: rgba(255,255,255,0.86) !important; }
+
+/* ── Panel-X: Dela Gothic One bold manga typography ─────────────── */
 html[data-theme="panel-x"] h1,
 html[data-theme="panel-x"] h2,
 html[data-theme="panel-x"] h3 {
-  font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+  font-family: 'Dela Gothic One', 'Impact', 'Arial Black', sans-serif;
   letter-spacing: 0.04em;
 }
 html[data-theme="panel-x"] .font-mono {
-  font-family: 'Bebas Neue', 'Courier New', monospace;
+  font-family: 'Dela Gothic One', 'Courier New', monospace;
   letter-spacing: 0.06em;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   CYBER-GRID CANVAS BACKGROUND
-══════════════════════════════════════════════════════════════════ */
-.bg-cyber-grid {
-  background-size: 50px 50px;
-  background-image:
-    linear-gradient(to right, rgba(39, 39, 42, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(39, 39, 42, 0.15) 1px, transparent 1px);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -157,7 +242,7 @@ html[data-theme="panel-x"] .font-mono {
    Applied via html[data-pattern="X"] attribute (ThemeContext)
 ══════════════════════════════════════════════════════════════════ */
 
-/* Matrix Grid — technical graph grid */
+/* Matrix Grid — technical graph grid (dark themes) */
 html[data-pattern="grid"] body {
   background-image:
     linear-gradient(to right, rgba(255,255,255,0.032) 1px, transparent 1px),
@@ -177,35 +262,28 @@ html[data-pattern="noise"] body {
   background-size: 200px 200px;
 }
 
-/* White-Out theme: invert pattern brightness for light canvas */
-html[data-theme="whiteout"][data-pattern="grid"] body {
-  background-image:
-    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-html[data-theme="whiteout"][data-pattern="dots"] body {
-  background-image: radial-gradient(rgba(0,0,0,0.09) 1px, transparent 1px);
-  background-size: 18px 18px;
-}
-html[data-theme="whiteout"][data-pattern="noise"] body {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
-
-/* Panel-X wallpaper patterns — darker base means patterns need slightly more opacity */
+/* Light themes: invert pattern brightness for light canvas */
+html[data-theme="sakura"][data-pattern="grid"] body,
+html[data-theme="matcha"][data-pattern="grid"] body,
+html[data-theme="shinto"][data-pattern="grid"] body,
 html[data-theme="panel-x"][data-pattern="grid"] body {
   background-image:
-    linear-gradient(to right, rgba(232,0,61,0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(232,0,61,0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
   background-size: 28px 28px;
 }
+html[data-theme="sakura"][data-pattern="dots"] body,
+html[data-theme="matcha"][data-pattern="dots"] body,
+html[data-theme="shinto"][data-pattern="dots"] body,
 html[data-theme="panel-x"][data-pattern="dots"] body {
-  background-image: radial-gradient(rgba(232,0,61,0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px);
   background-size: 18px 18px;
 }
+html[data-theme="sakura"][data-pattern="noise"] body,
+html[data-theme="matcha"][data-pattern="noise"] body,
+html[data-theme="shinto"][data-pattern="noise"] body,
 html[data-theme="panel-x"][data-pattern="noise"] body {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
 

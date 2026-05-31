@@ -12,6 +12,7 @@ import {
   Activity, Database, GitBranch, TrendingUp, ArrowRight, Settings2,
 } from 'lucide-react';
 import ThemeSelector from '@/components/navigation/ThemeSelector';
+import KuroBoxLogo from '@/components/navigation/KuroBoxLogo';
 
 interface DashboardClientProps {
   initialBoards: Board[];
@@ -205,21 +206,29 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
         <OnboardingStepper userId={userId} onComplete={() => setOnboardingDone(true)} />
       )}
 
-      <div className="min-h-screen bg-[var(--kb-bg)]">
+      <div className="min-h-screen bg-transparent">
         {/* ── Topbar ── */}
-        <header className="border-b border-[var(--kb-border-subtle)] px-6 py-4 flex items-center justify-between sticky top-0 bg-[var(--kb-bg)] z-40">
+        <header className="border-b border-[var(--kb-border-subtle)] px-6 py-4 flex items-center justify-between sticky top-0 bg-[var(--kb-bg)]/95 backdrop-blur-sm z-40">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 bg-[var(--kb-accent)] rounded-sm" />
-            <span className="text-sm font-bold tracking-tight">KuroBox</span>
-            <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest hidden sm:inline">
-              Command Center
-            </span>
+            <KuroBoxLogo size={22} />
+            <div>
+              <span className="text-sm font-bold tracking-tight">KuroBox</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest hidden sm:inline">
+                  Command Center
+                </span>
+                <span className="text-[9px] text-zinc-700 hidden sm:inline">コントロールセンター</span>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {initialUsername && (
-              <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest hidden md:inline">
-                SIGN-OFF: {initialUsername.toUpperCase()}
-              </span>
+              <div className="hidden md:flex flex-col items-end">
+                <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">
+                  SIGN-OFF: {initialUsername.toUpperCase()}
+                </span>
+                <span className="text-[8px] text-zinc-800">職人署名</span>
+              </div>
             )}
             <ThemeSelector />
             <button

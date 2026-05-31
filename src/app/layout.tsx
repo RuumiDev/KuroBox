@@ -11,13 +11,23 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'KuroBox — Dynamic Kanban & Table Engine',
+  title: 'KuroBox',
   description:
     'A flexible, developer-centric productivity tool for tracking any structured dataset.',
+  icons: {
+    icon: [
+      { url: '/icons/light/favicon-32x32.png', media: '(prefers-color-scheme: dark)', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/dark/favicon-32x32.png', media: '(prefers-color-scheme: light)', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/light/apple-touch-icon.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/icons/dark/apple-touch-icon.png', media: '(prefers-color-scheme: light)' },
+    ],
+  },
 };
 
 // Inline script that reads localStorage before first paint to prevent theme flash.
-const INIT_THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('kurobox-theme');var v=['stealth','radiation','overdrive','whiteout','panel-x'];if(t&&v.indexOf(t)!==-1)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const INIT_THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('kurobox-theme');var v=['stealth','radiation','overdrive','sakura','matcha','shinto','panel-x'];if(t&&v.indexOf(t)!==-1)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -169,3 +169,12 @@ BEGIN
     RETURN new_board_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================================
+-- v3.5 AESTHETIC MIGRATIONS
+-- Run these in the Supabase SQL editor if upgrading an existing DB.
+-- ============================================================
+
+-- Profiles: canvas contrast mode (soft-ink = light pastel themes)
+ALTER TABLE profiles
+    ADD COLUMN IF NOT EXISTS canvas_contrast_mode TEXT DEFAULT 'soft-ink' NOT NULL;

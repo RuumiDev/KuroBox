@@ -17,6 +17,7 @@ import { ArrowLeft, Settings, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { ImportResult } from '@/lib/utils/importers';
 import ThemeSelector from '@/components/navigation/ThemeSelector';
+import KuroBoxLogo from '@/components/navigation/KuroBoxLogo';
 
 interface BoardClientProps {
   initialBoard: Board;
@@ -116,9 +117,9 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
   };
 
   return (
-    <div className="h-screen bg-black flex flex-col overflow-hidden">
+    <div className="h-screen bg-transparent flex flex-col overflow-hidden">
       {/* ── Top toolbar ─────────────────────────────── */}
-      <header className="shrink-0 border-b border-zinc-900 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
+      <header className="shrink-0 border-b border-zinc-900 px-4 py-3 flex items-center gap-3 sticky top-0 z-40 bg-[var(--kb-bg)]/95 backdrop-blur-sm">
         <Link
           href="/dashboard"
           aria-label="Back to dashboard"
@@ -128,6 +129,7 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
         </Link>
 
         <div className="w-px h-4 bg-zinc-800" />
+        <KuroBoxLogo size={18} />
 
         <h1 className="text-sm font-semibold text-white flex-1 truncate">
           {currentBoard.title}

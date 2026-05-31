@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/client';
 
 // ── Theme profiles ────────────────────────────────────────────────────────────
 
-export type ThemeId = 'stealth' | 'radiation' | 'overdrive' | 'whiteout' | 'panel-x';
+export type ThemeId = 'stealth' | 'radiation' | 'overdrive' | 'sakura' | 'matcha' | 'shinto' | 'panel-x';
 
 export interface ThemeProfile {
   id: ThemeId;
@@ -49,20 +49,36 @@ export const THEME_PROFILES: ThemeProfile[] = [
     bg: '#121214',
   },
   {
-    id: 'whiteout',
+    id: 'sakura',
     code: '04',
-    name: 'White-Out',
-    description: 'High-Contrast Blueprint',
-    accent: '#09090b',
-    bg: '#ffffff',
+    name: 'Sakura',
+    description: 'Soft Blossom Pastel',
+    accent: '#C05674',
+    bg: '#FAF5F5',
+  },
+  {
+    id: 'matcha',
+    code: '05',
+    name: 'Matcha',
+    description: 'Calm Bamboo Sage',
+    accent: '#3A6645',
+    bg: '#F5F7F5',
+  },
+  {
+    id: 'shinto',
+    code: '06',
+    name: 'Shinto',
+    description: 'Porcelain Indigo Slate',
+    accent: '#3D5080',
+    bg: '#F4F6F9',
   },
   {
     id: 'panel-x',
-    code: '05',
+    code: '07',
     name: 'Panel-X',
     description: 'Manga Ink Structure',
-    accent: '#E8003D',
-    bg: '#0c0c0d',
+    accent: '#1A1A1A',
+    bg: '#EFEFEF',
   },
 ];
 

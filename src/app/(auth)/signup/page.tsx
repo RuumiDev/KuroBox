@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import KuroBoxLogo from '@/components/navigation/KuroBoxLogo';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -54,10 +55,12 @@ export default function SignupPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="text-center max-w-sm">
-          <div className="w-7 h-7 bg-[#FFDE4D] rounded-sm mb-5 mx-auto" />
-          <h2 className="text-lg font-bold text-white mb-2">Check your email</h2>
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
+        <div className="text-center max-w-sm bg-[var(--kb-surface)]/90 backdrop-blur-md border border-[var(--kb-border)] rounded-lg p-8">
+          <div className="flex justify-center mb-5">
+            <KuroBoxLogo size={44} />
+          </div>
+          <h2 className="text-lg font-bold text-[var(--kb-text)] mb-2">Check your email</h2>
           <p className="text-sm text-zinc-400">
             A confirmation link was sent to{' '}
             <span className="text-white font-medium">{email}</span>.
@@ -72,20 +75,22 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8">
-          <div className="w-7 h-7 bg-[#FFDE4D] rounded-sm mb-4" />
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create account</h1>
-          <p className="text-zinc-500 text-sm mt-1">Track anything, your way</p>
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-[var(--kb-surface)]/90 backdrop-blur-md border border-[var(--kb-border)] rounded-lg shadow-2xl shadow-black/30 overflow-hidden">
+        <div className="px-6 pt-7 pb-5 border-b border-[var(--kb-border-subtle)] text-center">
+          <div className="flex justify-center mb-4">
+            <KuroBoxLogo size={48} />
+          </div>
+          <h1 className="text-xl font-bold text-[var(--kb-text)] tracking-tight">Create account</h1>
+          <p className="font-mono text-[9px] text-zinc-600 mt-1 uppercase tracking-widest">NEW OPERATOR REGISTRY // 登録</p>
         </div>
-
+        <div className="px-6 py-6 space-y-4">
         {/* Google OAuth */}
         <button
           type="button"
           onClick={handleGoogleSignup}
           disabled={oauthLoading}
-          className="w-full flex items-center justify-center gap-3 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 text-white text-sm py-2.5 px-4 rounded-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+          className="w-full flex items-center justify-center gap-3 bg-[var(--kb-surface-alt)] border border-[var(--kb-border)] hover:border-[var(--kb-accent)] text-[var(--kb-text)] text-sm py-2.5 px-4 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {oauthLoading ? (
             <span className="w-4 h-4 border-2 border-zinc-600 border-t-white rounded-full animate-spin" />
@@ -159,8 +164,9 @@ export default function SignupPage() {
 
         <p className="text-xs text-zinc-600 text-center mt-6">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#FFDE4D] hover:underline">Sign in</Link>
+          <Link href="/login" className="text-[var(--kb-accent)] hover:underline">Sign in</Link>
         </p>
+        </div>
       </div>
     </div>
   );
