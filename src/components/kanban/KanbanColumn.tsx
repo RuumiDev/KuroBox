@@ -23,9 +23,9 @@ export default function KanbanColumn({
   onAddCard,
 }: KanbanColumnProps) {
   return (
-    <div className="flex flex-col w-72 shrink-0 snap-start">
+    <div className="flex flex-col w-72 shrink-0 snap-start min-h-0 h-full">
       {/* Column header */}
-      <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex items-center justify-between mb-3 px-1 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 truncate max-w-[160px]">
             {title}
@@ -37,21 +37,21 @@ export default function KanbanColumn({
         <button
           onClick={onAddCard}
           title={`Add card to ${title}`}
-          className="p-1 rounded-sm text-zinc-600 hover:text-[#FFDE4D] hover:bg-zinc-800 transition-colors cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FFDE4D]"
+          className="p-1 rounded-sm text-zinc-600 hover:text-[var(--kb-accent)] hover:bg-zinc-800 transition-colors cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--kb-accent)]"
         >
           <Plus size={14} />
         </button>
       </div>
 
-      {/* Drop zone */}
+      {/* Drop zone — scrolls independently, never overflows the board */}
       <Droppable droppableId={columnId}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex flex-col gap-2 flex-1 min-h-[200px] p-2 rounded-sm transition-all duration-150 ${
+            className={`flex flex-col gap-2 flex-1 min-h-[60px] overflow-y-auto scrollbar-thin p-2 rounded-sm transition-all duration-150 ${
               snapshot.isDraggingOver
-                ? 'border-2 border-dashed border-[#FFDE4D] bg-[#FFDE4D]/5'
+                ? 'border-2 border-dashed border-[var(--kb-accent)] bg-[var(--kb-accent)]/5'
                 : 'border border-zinc-800 bg-zinc-900/20'
             }`}
           >

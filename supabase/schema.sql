@@ -79,3 +79,45 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- ============================================================
+-- v2.0 PRO-MAX MIGRATIONS
+-- Run these in the Supabase SQL editor if upgrading an existing DB.
+-- Safe to run on a fresh schema as well (uses IF NOT EXISTS / ALTER … IF NOT EXISTS).
+-- ============================================================
+
+-- Boards: native pipeline column sequence storage
+ALTER TABLE boards
+    ADD COLUMN IF NOT EXISTS pipeline_columns JSONB
+    DEFAULT '["Applied","Viewed","Interview","Offer","Rejected"]'::jsonb NOT NULL;
+
+-- Cards: ensure status is always set + add schema_layout_order for field rendering
+ALTER TABLE cards ALTER COLUMN status SET NOT NULL;
+ALTER TABLE cards ALTER COLUMN status SET DEFAULT 'Default';
+
+ALTER TABLE cards
+    ADD COLUMN IF NOT EXISTS schema_layout_order INT NOT NULL DEFAULT 0;
+
+-- Index on schema_layout_order for ordered fetches
+CREATE INDEX IF NOT EXISTS idx_cards_schema_layout_order ON cards (board_id, schema_layout_order);
+
+-- ── Cascade reallocation helper ───────────────────────────────────────────────
+-- Called by the server-side migration path when a pipeline column is deleted.
+-- The frontend performs the same logic optimistically; this function handles
+-- server-side batch corrections and can be called via a Supabase Edge Function.
+CREATE OR REPLACE FUNCTION reallocate_orphaned_cards(
+    target_board_id UUID,
+    old_status      TEXT,
+    new_status      TEXT
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE cards
+    SET
+        status     = new_status,
+        updated_at = timezone('utc'::text, now())
+    WHERE
+        board_id = target_board_id
+        AND status = old_status;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

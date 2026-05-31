@@ -7,6 +7,7 @@ import { useCards } from '@/lib/hooks/useCards';
 import KanbanBoard from '@/components/kanban/KanbanBoard';
 import TableView from '@/components/table/TableView';
 import SchemaManager from '@/components/schema/SchemaManager';
+import ColumnReallocationModal from '@/components/schema/ColumnReallocationModal';
 import UniversalImporter from '@/components/importer/UniversalImporter';
 import CardModal from '@/components/CardModal';
 import ViewToggle from '@/components/ViewToggle';
@@ -31,15 +32,18 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [showSchema, setShowSchema] = useState(false);
   const [showImporter, setShowImporter] = useState(false);
+  const [deletingColumn, setDeletingColumn] = useState<string | null>(null);
 
   // Prefer live hook data, fall back to initial server data
   const currentBoard = board ?? initialBoard;
   const view = currentBoard.config.view;
 
-  const getFirstColumn = () =>
-    currentBoard.config.column_order[0] ??
-    currentBoard.schema_definition.attributes.find(a => a.id === 'status')?.options?.[0] ??
-    'Default';
+  const columnOrder =
+    currentBoard.config.column_order.length > 0
+      ? currentBoard.config.column_order
+      : (currentBoard.schema_definition.attributes.find(a => a.id === 'status')?.options ?? []);
+
+  const getFirstColumn = () => columnOrder[0] ?? 'Default';
 
   const handleImport = async (result: ImportResult) => {
     await updateSchema({ attributes: result.schema });
@@ -47,14 +51,51 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
     await bulkInsertCards(result.cards);
   };
 
-  // Sync card state with active card when it gets updated
+  // Sync active card state when it gets updated by another operation
   const getActiveCard = () =>
     activeCard ? (cards.find(c => c.id === activeCard.id) ?? activeCard) : null;
+
+  // ── Pipeline column management ─────────────────────────────────────────────
+
+  const handleSaveColumns = async (columns: string[]) => {
+    await updateConfig({ column_order: columns });
+  };
+
+  const handleRequestDeleteColumn = (col: string) => {
+    const hasCards = cards.some(c => c.status === col);
+    if (!hasCards) {
+      // Empty column — remove immediately
+      updateConfig({ column_order: columnOrder.filter(c => c !== col) });
+    } else {
+      // Non-empty — open reallocation modal
+      setDeletingColumn(col);
+    }
+  };
+
+  const handleMigrateColumn = async (targetCol: string) => {
+    if (!deletingColumn) return;
+    const affected = cards.filter(c => c.status === deletingColumn);
+    const baseOrder = cards.filter(c => c.status === targetCol).length;
+    // Batch-migrate all cards to the target column
+    await Promise.all(
+      affected.map((card, i) => moveCard(card.id, targetCol, baseOrder + i))
+    );
+    await updateConfig({ column_order: columnOrder.filter(c => c !== deletingColumn) });
+    setDeletingColumn(null);
+  };
+
+  const handleDestroyColumn = async () => {
+    if (!deletingColumn) return;
+    const affected = cards.filter(c => c.status === deletingColumn);
+    await Promise.all(affected.map(card => deleteCard(card.id)));
+    await updateConfig({ column_order: columnOrder.filter(c => c !== deletingColumn) });
+    setDeletingColumn(null);
+  };
 
   return (
     <div className="h-screen bg-black flex flex-col overflow-hidden">
       {/* ── Top toolbar ─────────────────────────────── */}
-      <header className="shrink-0 border-b border-zinc-900 px-4 py-3 flex items-center gap-3">
+      <header className="shrink-0 border-b border-zinc-900 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
         <Link
           href="/dashboard"
           aria-label="Back to dashboard"
@@ -69,9 +110,9 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
           {currentBoard.title}
         </h1>
 
-        {/* Mobile: column tab switcher (visible only on sm and below) */}
+        {/* Mobile: column tab switcher */}
         <div className="flex sm:hidden overflow-x-auto gap-1">
-          {currentBoard.config.column_order.map(col => (
+          {columnOrder.map(col => (
             <span
               key={col}
               className="text-[10px] px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-sm whitespace-nowrap text-zinc-400"
@@ -103,7 +144,7 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
       </header>
 
       {/* ── Board content ────────────────────────────── */}
-      <div className="flex-1 overflow-hidden p-4">
+      <div className="flex-1 min-h-0 overflow-hidden p-4">
         {view === 'kanban' ? (
           <KanbanBoard
             board={currentBoard}
@@ -113,14 +154,16 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
             onCreateCard={status => createCard(status)}
           />
         ) : (
-          <TableView
-            board={currentBoard}
-            cards={cards}
-            onUpdateCard={updateCard}
-            onDeleteCard={deleteCard}
-            onAddCard={() => createCard(getFirstColumn())}
-            onCardClick={setActiveCard}
-          />
+          <div className="h-full overflow-y-auto scrollbar-thin">
+            <TableView
+              board={currentBoard}
+              cards={cards}
+              onUpdateCard={updateCard}
+              onDeleteCard={deleteCard}
+              onAddCard={() => createCard(getFirstColumn())}
+              onCardClick={setActiveCard}
+            />
+          </div>
         )}
       </div>
 
@@ -144,8 +187,21 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
       {showSchema && (
         <SchemaManager
           schema={currentBoard.schema_definition}
+          pipelineColumns={columnOrder}
           onSave={updateSchema}
+          onSaveColumns={handleSaveColumns}
+          onRequestDeleteColumn={handleRequestDeleteColumn}
           onClose={() => setShowSchema(false)}
+        />
+      )}
+
+      {deletingColumn && (
+        <ColumnReallocationModal
+          deletingColumn={deletingColumn}
+          remainingColumns={columnOrder.filter(c => c !== deletingColumn)}
+          onMigrate={handleMigrateColumn}
+          onDestroy={handleDestroyColumn}
+          onCancel={() => setDeletingColumn(null)}
         />
       )}
 

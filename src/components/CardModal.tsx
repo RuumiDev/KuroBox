@@ -23,8 +23,11 @@ export default function CardModal({
   const [data, setData] = useState<Record<string, unknown>>(card.attributes_data);
 
   const attrs = board.schema_definition.attributes.filter(a => a.isEnabled);
+  // Status options driven by the pipeline column_order (single source of truth)
   const statusOptions =
-    board.schema_definition.attributes.find(a => a.id === 'status')?.options ?? [];
+    board.config.column_order.length > 0
+      ? board.config.column_order
+      : (board.schema_definition.attributes.find(a => a.id === 'status')?.options ?? []);
 
   const handleAttrChange = (attrId: string, value: unknown) => {
     const next = { ...data, [attrId]: value };

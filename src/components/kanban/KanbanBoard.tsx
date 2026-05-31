@@ -37,8 +37,8 @@ export default function KanbanBoard({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      {/* Horizontal scroll container — stacks vertically on mobile */}
-      <div className="flex gap-4 h-full overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
+      {/* Cyber-grid horizontal scroll — columns fill the available height */}
+      <div className="flex gap-4 h-full overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none bg-cyber-grid">
         {columns.map(column => (
           <KanbanColumn
             key={column}

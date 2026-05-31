@@ -37,6 +37,7 @@ export interface Card {
   board_id: string;
   status: string;
   sort_order: number;
+  schema_layout_order: number;
   attributes_data: Record<string, unknown>;
   created_at: string;
   updated_at: string;
