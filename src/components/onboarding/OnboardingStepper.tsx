@@ -159,22 +159,27 @@ export default function OnboardingStepper({ userId, onComplete }: OnboardingStep
 
         {/* Progress header */}
         <div className="px-6 pt-5 pb-4 border-b border-zinc-800/60">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">
-              SHOKUNIN SETUP · 職人
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">
+              職人セットアップ
             </span>
-            <span className="font-mono text-[9px] text-zinc-700">
-              {String(step).padStart(2, '0')} / {String(TOTAL).padStart(2, '0')}
-            </span>
-          </div>
-          <div className="flex gap-1">
-            {Array.from({ length: TOTAL }, (_, i) => (
-              <div
-                key={i}
-                className="h-0.5 flex-1 rounded-full transition-all duration-300"
-                style={{ backgroundColor: i < step ? 'var(--kb-accent)' : '#27272a' }}
-              />
-            ))}
+            <div className="flex items-center gap-2 font-mono text-[9px]">
+              <span className="text-zinc-600">
+                {'['}
+                {Array.from({ length: TOTAL }, (_, i) => (
+                  <span key={i}>
+                    {i > 0 && ' ｜ '}
+                    <span style={{ color: i < step ? 'var(--kb-accent)' : '#52525b' }}>
+                      {i < step ? '満' : '空'}
+                    </span>
+                  </span>
+                ))}
+                {'}'}
+              </span>
+              <span className="text-zinc-700">
+                STEP {String(step).padStart(2, '0')}/{String(TOTAL).padStart(2, '0')}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -226,7 +231,7 @@ export default function OnboardingStepper({ userId, onComplete }: OnboardingStep
               disabled={!canProceed || submitting}
               className="font-mono text-[11px] bg-[var(--kb-accent)] text-[var(--kb-accent-fg)] px-4 py-1.5 rounded-sm hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             >
-              {submitting ? 'INITIALIZING…' : 'INITIALIZE WORKSPACE →'}
+              {submitting ? '初期化中…' : '黒笱を起動する →'}
             </button>
           )}
         </div>

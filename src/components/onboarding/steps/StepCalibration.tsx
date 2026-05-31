@@ -34,14 +34,14 @@ export default function StepCalibration({
       <div className="flex items-center gap-2 mb-1">
         <Palette size={13} className="text-[var(--kb-accent)]" />
         <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">
-          theme_calibration.sys
+          空間意匠 · WORKSPACE DESIGN
         </span>
       </div>
       <h2 className="text-[var(--kb-text)] font-bold text-[15px] tracking-tight leading-none mb-1">
-        VISUAL PROFILE
+        空間意匠
       </h2>
       <p className="font-mono text-[10px] text-zinc-600 mb-5">
-        SELECT YOUR COLOR MATRIX — CHANGES APPLY LIVE
+        カラープロファイルとキャンバスを選択 — LIVE PREVIEW
       </p>
 
       {/* ── Color profiles ── */}

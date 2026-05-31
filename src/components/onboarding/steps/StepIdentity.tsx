@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Terminal } from 'lucide-react';
 
 interface StepIdentityProps {
   username: string;
@@ -9,10 +8,10 @@ interface StepIdentityProps {
 }
 
 const BOOT_LINES = [
-  '> INITIALIZING KUROBOX INSTANCE...',
-  '> SECURITY MODULE.......... PASSED',
-  '> SHOKUNIN SUBSYSTEM....... LOADED',
-  '> AWAITING SHOKUNIN TAG ・ 職人 INPUT.',
+  '> 職人署名システム 起動中...',
+  '> SIGN-OFF REGISTRY....... READY',
+  '> SHOKUNIN PROFILE........ PENDING',
+  '> 職人名を入力してください。',
 ];
 
 export default function StepIdentity({ username, onChange }: StepIdentityProps) {
@@ -58,9 +57,8 @@ export default function StepIdentity({ username, onChange }: StepIdentityProps) 
     <div className="p-6">
       {/* Module label */}
       <div className="flex items-center gap-2 mb-5">
-        <Terminal size={13} className="text-[#FFDE4D]" />
         <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">
-          identity_matrix.exe
+          職人署名 · SHOKUNIN SIGN-OFF REGISTRY
         </span>
       </div>
 
@@ -101,7 +99,7 @@ export default function StepIdentity({ username, onChange }: StepIdentityProps) 
             ref={inputRef}
             value={username}
             onChange={e => onChange(e.target.value)}
-            placeholder="e.g. akira, kuro_dev, unit-07"
+            placeholder="職人名を入力..."
             maxLength={32}
             onKeyDown={e => e.key === 'Enter' && username.trim().length >= 2 && undefined}
             className="w-full bg-zinc-900 border border-zinc-800 text-white font-mono text-sm pl-8 pr-4 py-2.5 rounded-sm focus:outline-none focus:border-[#FFDE4D] transition-colors placeholder:text-zinc-700"

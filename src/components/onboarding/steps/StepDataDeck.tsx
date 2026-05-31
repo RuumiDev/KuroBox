@@ -23,10 +23,10 @@ export default function StepDataDeck({ selected, onSelect }: StepDataDeckProps) 
       {/* Header */}
       <div className="mb-5">
         <h2 className="text-white font-bold text-[15px] tracking-tight leading-none">
-          DATA DECK ALLOCATION
+          起動プロトコル
         </h2>
         <p className="font-mono text-[10px] text-zinc-600 mt-1.5 uppercase tracking-widest">
-          SELECT A STARTER PROTOCOL FOR YOUR WORKSPACE
+          STARTER LEDGER DEPLOYMENT · スターター台帳を選択
         </p>
       </div>
 

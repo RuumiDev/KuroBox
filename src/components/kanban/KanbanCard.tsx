@@ -78,7 +78,7 @@ export default function KanbanCard({ card, index, schema, onClick }: KanbanCardP
           {...provided.dragHandleProps}
           onClick={onClick}
           className={[
-            'bg-zinc-900 border p-3 rounded-sm cursor-pointer select-none',
+            'kb-card bg-zinc-900 border p-3 rounded-sm cursor-pointer select-none',
             'transition-all duration-150',
             'hover:border-zinc-600 hover:bg-zinc-800',
             'focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--kb-accent)]',

@@ -332,3 +332,17 @@ html[data-theme="panel-x"][data-pattern="noise"] body {
     @apply block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5;
   }
 }
+/* ══════════════════════════════════════════════════════════════════
+   v3.95: THEME-AWARE CARD HOVER CONTRAST
+   Light themes: override zinc-800 dark hover with soft palette tints
+══════════════════════════════════════════════════════════════════ */
+html[data-theme="sakura"] .hover\:bg-zinc-800:hover { background-color: #F3EBEB; }
+html[data-theme="matcha"] .hover\:bg-zinc-800:hover { background-color: #ECF0EC; }
+html[data-theme="shinto"] .hover\:bg-zinc-800:hover { background-color: #E9ECF3; }
+html[data-theme="panel-x"] .hover\:bg-zinc-800:hover { background-color: #FFFFFF; }
+
+/* Panel-X: tactile manga-panel card lift on hover */
+html[data-theme="panel-x"] .kb-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000;
+}
