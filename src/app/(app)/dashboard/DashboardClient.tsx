@@ -210,7 +210,7 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
         {/* ── Topbar ── */}
         <header className="border-b border-[var(--kb-border-subtle)] px-6 py-4 flex items-center justify-between sticky top-0 bg-[var(--kb-bg)]/95 backdrop-blur-sm z-40">
           <div className="flex items-center gap-3">
-            <KuroBoxLogo size={22} />
+            <KuroBoxLogo size={32} />
             <div>
               <span className="text-sm font-bold tracking-tight">KuroBox</span>
               <div className="flex items-center gap-2">

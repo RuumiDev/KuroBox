@@ -5,16 +5,18 @@ import { useTheme } from '@/lib/context/ThemeContext';
 const LIGHT_THEMES = new Set(['sakura', 'matcha', 'shinto', 'panel-x']);
 
 interface KuroBoxLogoProps {
+  /** Display size in px — maps to both w/h. Default 32. */
   size?: number;
   className?: string;
 }
 
-export default function KuroBoxLogo({ size = 28, className = '' }: KuroBoxLogoProps) {
+export default function KuroBoxLogo({ size = 32, className = '' }: KuroBoxLogoProps) {
   const { theme } = useTheme();
-  // Dark icon (Black folder) = for light bg themes; White icon = for dark bg themes
+  // KuroBlack.png = dark ink icon → use on light backgrounds
+  // KuroWhite.png = white icon → use on dark backgrounds
   const src = LIGHT_THEMES.has(theme)
-    ? '/icons/dark/favicon-32x32.png'
-    : '/icons/light/favicon-32x32.png';
+    ? '/icons/KuroBlack.png'
+    : '/icons/KuroWhite.png';
 
   return (
     <img
@@ -22,7 +24,8 @@ export default function KuroBoxLogo({ size = 28, className = '' }: KuroBoxLogoPr
       alt="KuroBox 力B"
       width={size}
       height={size}
-      className={`rounded-sm object-contain ${className}`}
+      className={`object-contain ${className}`}
+      draggable={false}
     />
   );
 }

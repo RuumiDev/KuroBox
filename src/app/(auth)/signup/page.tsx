@@ -79,7 +79,7 @@ export default function SignupPage() {
       <div className="w-full max-w-sm bg-[var(--kb-surface)]/90 backdrop-blur-md border border-[var(--kb-border)] rounded-lg shadow-2xl shadow-black/30 overflow-hidden">
         <div className="px-6 pt-7 pb-5 border-b border-[var(--kb-border-subtle)] text-center">
           <div className="flex justify-center mb-4">
-            <KuroBoxLogo size={48} />
+            <KuroBoxLogo className="w-16 h-16 md:w-20 md:h-20" />
           </div>
           <h1 className="text-xl font-bold text-[var(--kb-text)] tracking-tight">Create account</h1>
           <p className="font-mono text-[9px] text-zinc-600 mt-1 uppercase tracking-widest">NEW OPERATOR REGISTRY // 登録</p>

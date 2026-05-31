@@ -129,7 +129,7 @@ export default function BoardClient({ initialBoard, initialCards }: BoardClientP
         </Link>
 
         <div className="w-px h-4 bg-zinc-800" />
-        <KuroBoxLogo size={18} />
+        <KuroBoxLogo size={32} />
 
         <h1 className="text-sm font-semibold text-white flex-1 truncate">
           {currentBoard.title}

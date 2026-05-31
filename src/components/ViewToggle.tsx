@@ -14,16 +14,16 @@ const VIEWS = [
 
 export default function ViewToggle({ view, onChange }: ViewToggleProps) {
   return (
-    <div className="flex border border-zinc-800 rounded-sm overflow-hidden">
+    <div className="flex border border-zinc-300 dark:border-zinc-800 rounded-sm overflow-hidden">
       {VIEWS.map(({ id, icon: Icon, label, kanji }) => (
         <button
           key={id}
           onClick={() => onChange(id)}
           aria-pressed={view === id}
-          className={`flex flex-col items-center gap-0 px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFDE4D] ${
+          className={`flex flex-col items-center gap-0 px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kb-accent)] ${
             view === id
-              ? 'bg-[#FFDE4D] text-black'
-              : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              ? 'bg-zinc-950 text-white font-bold border-2 border-black shadow-[2px_2px_0px_#000000]'
+              : 'bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200'
           }`}
         >
           <span className="flex items-center gap-1.5">
