@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/client';
 
 // ── Theme profiles ────────────────────────────────────────────────────────────
 
-export type ThemeId = 'stealth' | 'radiation' | 'overdrive' | 'whiteout';
+export type ThemeId = 'stealth' | 'radiation' | 'overdrive' | 'whiteout' | 'panel-x';
 
 export interface ThemeProfile {
   id: ThemeId;
@@ -55,6 +55,14 @@ export const THEME_PROFILES: ThemeProfile[] = [
     description: 'High-Contrast Blueprint',
     accent: '#09090b',
     bg: '#ffffff',
+  },
+  {
+    id: 'panel-x',
+    code: '05',
+    name: 'Panel-X',
+    description: 'Manga Ink Structure',
+    accent: '#E8003D',
+    bg: '#0c0c0d',
   },
 ];
 

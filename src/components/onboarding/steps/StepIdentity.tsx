@@ -11,8 +11,8 @@ interface StepIdentityProps {
 const BOOT_LINES = [
   '> INITIALIZING KUROBOX INSTANCE...',
   '> SECURITY MODULE.......... PASSED',
-  '> IDENTITY SUBSYSTEM........ LOADED',
-  '> AWAITING OPERATOR TAG INPUT.',
+  '> SHOKUNIN SUBSYSTEM....... LOADED',
+  '> AWAITING SHOKUNIN TAG ・ 職人 INPUT.',
 ];
 
 export default function StepIdentity({ username, onChange }: StepIdentityProps) {
@@ -88,10 +88,10 @@ export default function StepIdentity({ username, onChange }: StepIdentityProps) 
         )}
       </div>
 
-      {/* Operator tag input */}
+      {/* Shokunin tag input */}
       <div>
         <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">
-          OPERATOR TAG
+          SHOKUNIN TAG · 職人
         </label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-zinc-700 select-none">
@@ -101,7 +101,7 @@ export default function StepIdentity({ username, onChange }: StepIdentityProps) 
             ref={inputRef}
             value={username}
             onChange={e => onChange(e.target.value)}
-            placeholder="e.g. UNIT-7, akmal.dev, root_user"
+            placeholder="e.g. akira, kuro_dev, unit-07"
             maxLength={32}
             onKeyDown={e => e.key === 'Enter' && username.trim().length >= 2 && undefined}
             className="w-full bg-zinc-900 border border-zinc-800 text-white font-mono text-sm pl-8 pr-4 py-2.5 rounded-sm focus:outline-none focus:border-[#FFDE4D] transition-colors placeholder:text-zinc-700"
@@ -109,7 +109,7 @@ export default function StepIdentity({ username, onChange }: StepIdentityProps) 
         </div>
         <div className="flex items-center justify-between mt-1.5">
           <p className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">
-            MIN 2 · MAX 32 · YOUR WORKSPACE IDENTIFIER
+            MIN 2 · MAX 32 · YOUR CRAFTSMAN IDENTIFIER
           </p>
           <span
             className={`font-mono text-[9px] tabular-nums transition-colors ${

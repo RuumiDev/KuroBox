@@ -5,11 +5,10 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { TemplateId } from '@/types';
 import { BOARD_TEMPLATES } from '@/lib/utils/templates';
+import { useTheme, ThemeId, BackgroundPattern } from '@/lib/context/ThemeContext';
 import StepIdentity from './steps/StepIdentity';
+import StepCalibration from './steps/StepCalibration';
 import StepDataDeck from './steps/StepDataDeck';
-import StepProtocol from './steps/StepProtocol';
-import StepFinalize from './steps/StepFinalize';
-import { BackgroundPattern } from '@/lib/context/ThemeContext';
 
 interface OnboardingStepperProps {
   userId: string;
@@ -17,9 +16,10 @@ interface OnboardingStepperProps {
 }
 
 interface OnboardingData {
-  username: string;
+  shokunin_tag: string;
   templateId: TemplateId | null;
   backgroundPattern: BackgroundPattern;
+  themeId: ThemeId;
 }
 
 interface FlashDot {
@@ -31,8 +31,8 @@ interface FlashDot {
   color: string;
 }
 
-const TOTAL = 4;
-const FLASH_COLORS = ['#22c55e', '#86efac', '#FFDE4D', '#4ade80'];
+const TOTAL = 3;
+const FLASH_COLORS = ['#22c55e', '#86efac', '#E8003D', '#4ade80'];
 
 function buildFlashes(): FlashDot[] {
   return Array.from({ length: 32 }, (_, i) => ({
@@ -46,190 +46,191 @@ function buildFlashes(): FlashDot[] {
 }
 
 export default function OnboardingStepper({ userId, onComplete }: OnboardingStepperProps) {
+  const { theme, setTheme, setBackgroundPattern } = useTheme();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [showFlashes, setShowFlashes] = useState(false);
   const [flashes] = useState<FlashDot[]>(buildFlashes);
-  const [data, setData] = useState<OnboardingData>({ username: '', templateId: null, backgroundPattern: 'none' });
+  const [data, setData] = useState<OnboardingData>({
+    shokunin_tag: '',
+    templateId: null,
+    backgroundPattern: 'none',
+    themeId: theme,
+  });
   const router = useRouter();
 
   const canProceed =
-    (step === 1 && data.username.trim().length >= 2) ||
-    (step === 2 && data.templateId !== null) ||
-    step === 3;
+    (step === 1 && data.shokunin_tag.trim().length >= 2) ||
+    step === 2 ||
+    (step === 3 && data.templateId !== null);
 
   const next = () => setStep(s => Math.min(s + 1, TOTAL));
   const back = () => setStep(s => Math.max(s - 1, 1));
 
+  // Live-preview theme calibration changes
+  const handleThemeChange = useCallback((id: ThemeId) => {
+    setData(d => ({ ...d, themeId: id }));
+    setTheme(id);
+  }, [setTheme]);
+
+  const handlePatternChange = useCallback(async (p: BackgroundPattern) => {
+    setData(d => ({ ...d, backgroundPattern: p }));
+    await setBackgroundPattern(p);
+  }, [setBackgroundPattern]);
+
   const handleFinalize = useCallback(async () => {
-    if (submitting) return;
+    if (!data.templateId || submitting) return;
     setSubmitting(true);
     setShowFlashes(true);
 
     const supabase = createClient();
-    const template = BOARD_TEMPLATES.find(t => t.id === data.templateId);
-    const trimmed = data.username.trim();
+    const template = BOARD_TEMPLATES.find(t => t.id === data.templateId)!;
+    const trimmed = data.shokunin_tag.trim() || 'Craftsman';
 
-    // Persist operator tag to profile
+    // Persist shokunin profile
     await supabase
       .from('profiles')
-      .upsert({ id: userId, username: trimmed, background_pattern: data.backgroundPattern, updated_at: new Date().toISOString() });
+      .upsert({
+        id: userId,
+        username: trimmed,
+        shokunin_tag: trimmed,
+        background_pattern: data.backgroundPattern,
+        updated_at: new Date().toISOString(),
+      });
 
-    // Create starter board from selected template
-    if (template) {
-      const statusAttr = template.schema.attributes.find(a => a.id === 'status');
-      const columnOrder = statusAttr?.options ?? template.defaultColumns;
-      await supabase.from('boards').insert({
+    // Create starter board — select id so we can route directly
+    const statusAttr = template.schema.attributes.find(a => a.id === 'status');
+    const columnOrder = statusAttr?.options ?? template.defaultColumns;
+
+    const { data: newBoard } = await supabase
+      .from('boards')
+      .insert({
         user_id: userId,
         title: `${trimmed}'s ${template.name}`,
         config: {
           view: 'kanban',
-          visible_attributes: template.schema.attributes.filter(a => a.isEnabled).map(a => a.id),
+          visible_attributes: template.schema.attributes
+            .filter(a => a.isEnabled)
+            .map(a => a.id),
           column_order: columnOrder,
         },
         schema_definition: template.schema,
-      });
-    }
+        pipeline_columns: columnOrder,
+      })
+      .select('id')
+      .single();
 
-    // Let flash animation play, then unmount and refresh server data
     setTimeout(() => {
       setShowFlashes(false);
-      onComplete();
-      router.refresh();
-    }, 1900);
+      if (newBoard?.id) {
+        router.push(`/board/${newBoard.id}`);
+      } else {
+        onComplete();
+        router.refresh();
+      }
+    }, 1400);
   }, [submitting, data, userId, router, onComplete]);
 
-  // Step indicator blocks: ⬛ = done/current, ⬜ = upcoming
-  const blocks = Array.from({ length: TOTAL }, (_, i) => (i < step ? '⬛' : '⬜'));
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backdropFilter: 'blur(20px) saturate(0.4)', backgroundColor: 'rgba(0,0,0,0.78)' }}
-    >
-      {/* ── Green flash explosion ── */}
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+      {/* ── Flash overlay ── */}
       {showFlashes && (
-        <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 60 }}>
-          {flashes.map(d => (
+        <div className="fixed inset-0 pointer-events-none z-[60]">
+          {flashes.map(f => (
             <div
-              key={d.id}
-              className="absolute rounded-full"
+              key={f.id}
+              className="absolute rounded-sm flash-commit"
               style={{
-                left: `${d.x}%`,
-                top: `${d.y}%`,
-                width: d.size,
-                height: d.size,
-                backgroundColor: d.color,
-                animation: `kbFlash 0.95s ${d.delay}s ease-out both`,
+                left: `${f.x}%`,
+                top: `${f.y}%`,
+                width: f.size,
+                height: f.size,
+                backgroundColor: f.color,
+                animationDelay: `${f.delay}s`,
+                opacity: 0,
               }}
             />
           ))}
         </div>
       )}
 
-      <div className="w-full max-w-lg">
-        {/* ── Step tracker ── */}
-        <div className="flex items-center gap-3 mb-5 select-none">
-          <span className="font-mono text-[13px] text-[#FFDE4D] tracking-widest leading-none">
-            [{' '}{blocks.join(' ')}{' '}]
-          </span>
-          <span className="font-mono text-[11px] text-zinc-600 tracking-widest">
-            STEP {String(step).padStart(2, '0')} / {String(TOTAL).padStart(2, '0')}
-          </span>
-          <div className="flex-1 h-px bg-gradient-to-r from-zinc-800 to-transparent" />
-          <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">
-            KUROBOX INIT
-          </span>
+      {/* ── Main card ── */}
+      <div className="w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-sm shadow-2xl overflow-hidden">
+
+        {/* Progress header */}
+        <div className="px-6 pt-5 pb-4 border-b border-zinc-800/60">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">
+              SHOKUNIN SETUP · 職人
+            </span>
+            <span className="font-mono text-[9px] text-zinc-700">
+              {String(step).padStart(2, '0')} / {String(TOTAL).padStart(2, '0')}
+            </span>
+          </div>
+          <div className="flex gap-1">
+            {Array.from({ length: TOTAL }, (_, i) => (
+              <div
+                key={i}
+                className="h-0.5 flex-1 rounded-full transition-all duration-300"
+                style={{ backgroundColor: i < step ? 'var(--kb-accent)' : '#27272a' }}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* ── Step card ── */}
-        <div
-          key={`step-${step}`}
-          className="bg-zinc-950 border border-zinc-800 rounded-sm overflow-hidden"
-          style={{
-            boxShadow: '4px 4px 0px #27272a',
-            animation: 'kbStepIn 0.24s cubic-bezier(0.16,1,0.3,1) both',
-          }}
-        >
+        {/* Step content */}
+        <div className="min-h-[300px]">
           {step === 1 && (
             <StepIdentity
-              username={data.username}
-              onChange={v => setData(d => ({ ...d, username: v }))}
+              username={data.shokunin_tag}
+              onChange={v => setData(d => ({ ...d, shokunin_tag: v }))}
             />
           )}
           {step === 2 && (
+            <StepCalibration
+              selectedTheme={data.themeId}
+              onThemeChange={handleThemeChange}
+              selectedPattern={data.backgroundPattern}
+              onPatternChange={handlePatternChange}
+            />
+          )}
+          {step === 3 && (
             <StepDataDeck
               selected={data.templateId}
               onSelect={id => setData(d => ({ ...d, templateId: id }))}
             />
           )}
-          {step === 3 && (
-            <StepProtocol
-              backgroundPattern={data.backgroundPattern}
-              onPatternChange={p => setData(d => ({ ...d, backgroundPattern: p }))}
-            />
-          )}
-          {step === 4 && (
-            <StepFinalize
-              username={data.username}
-              templateId={data.templateId}
-              onFinalize={handleFinalize}
-              submitting={submitting}
-            />
-          )}
+        </div>
 
-          {/* ── Footer nav (steps 1–3 only) ── */}
-          {step < 4 && (
-            <div className="flex items-center justify-between px-6 pb-5 pt-3 border-t border-zinc-800/50">
-              <button
-                onClick={back}
-                disabled={step === 1}
-                className="font-mono text-[10px] text-zinc-600 hover:text-zinc-300 disabled:opacity-20 disabled:cursor-not-allowed transition-colors uppercase tracking-widest cursor-pointer"
-              >
-                ← BACK
-              </button>
+        {/* Footer nav */}
+        <div className="px-6 pb-5 pt-4 border-t border-zinc-800/60 flex items-center justify-between">
+          <button
+            onClick={back}
+            disabled={step === 1 || submitting}
+            className="font-mono text-[11px] text-zinc-600 hover:text-zinc-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+          >
+            ← BACK
+          </button>
 
-              <div className="flex items-center gap-3">
-                {/* Mini step dots */}
-                <div className="flex gap-1">
-                  {Array.from({ length: TOTAL }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="rounded-full transition-all duration-300"
-                      style={{
-                        width: i === step - 1 ? 14 : 5,
-                        height: 5,
-                        backgroundColor: i < step ? '#FFDE4D' : '#27272a',
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={next}
-                  disabled={!canProceed}
-                  className="font-mono text-[10px] font-bold bg-[#FFDE4D] text-black px-5 py-2.5 hover:bg-[#FFE869] active:scale-[0.97] disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase tracking-widest cursor-pointer rounded-sm"
-                >
-                  {step === 3 ? 'READY →' : 'NEXT →'}
-                </button>
-              </div>
-            </div>
+          {step < TOTAL ? (
+            <button
+              onClick={next}
+              disabled={!canProceed}
+              className="font-mono text-[11px] bg-[var(--kb-accent)] text-[var(--kb-accent-fg)] px-4 py-1.5 rounded-sm hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+            >
+              NEXT STEP →
+            </button>
+          ) : (
+            <button
+              onClick={handleFinalize}
+              disabled={!canProceed || submitting}
+              className="font-mono text-[11px] bg-[var(--kb-accent)] text-[var(--kb-accent-fg)] px-4 py-1.5 rounded-sm hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {submitting ? 'INITIALIZING…' : 'INITIALIZE WORKSPACE →'}
+            </button>
           )}
         </div>
       </div>
-
-      {/* ── Global keyframes (self-contained) ── */}
-      <style>{`
-        @keyframes kbStepIn {
-          from { opacity: 0; transform: translateY(10px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)   scale(1);    }
-        }
-        @keyframes kbFlash {
-          0%   { opacity: 0; transform: scale(0)   translateY(0px);   }
-          35%  { opacity: 1; transform: scale(1.7) translateY(-4px);  }
-          100% { opacity: 0; transform: scale(0.3) translateY(-28px); }
-        }
-      `}</style>
     </div>
   );
 }

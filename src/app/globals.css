@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 /* ══════════════════════════════════════════════════════════════════
    THEME CUSTOM PROPERTIES
@@ -70,6 +71,21 @@ html[data-theme="whiteout"] {
   color-scheme: light;
 }
 
+html[data-theme="panel-x"] {
+  --kb-bg:            #0c0c0d;
+  --kb-surface:       #141416;
+  --kb-surface-alt:   #1c1c1f;
+  --kb-border:        #2e1a22;
+  --kb-border-subtle: #1f141a;
+  --kb-accent:        #E8003D;
+  --kb-accent-hover:  #ff1a52;
+  --kb-accent-fg:     #ffffff;
+  --kb-text:          #f0f0f0;
+  --kb-text-muted:    #7a6470;
+  --kb-text-dim:      #3a2830;
+  color-scheme: dark;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    THEME OVERRIDES — remap hardcoded Tailwind classes to CSS vars.
    `html` prefix adds specificity (0,1,1) to beat bare classes (0,1,0).
@@ -93,12 +109,38 @@ html .ring-\[\#FFDE4D\]                              { --tw-ring-color: var(--kb
 html .from-\[\#FFDE4D\]                              { --tw-gradient-from: var(--kb-accent); }
 
 /* White-Out: invert text-white / muted text to be readable on light bg */
-html[data-theme="whiteout"] .text-white   { color: var(--kb-text); }
+html[data-theme="whiteout"] .text-white    { color: var(--kb-text); }
+html[data-theme="whiteout"] .text-zinc-200 { color: #27272a; }
 html[data-theme="whiteout"] .text-zinc-300 { color: #3f3f46; }
 html[data-theme="whiteout"] .text-zinc-400 { color: #52525b; }
 html[data-theme="whiteout"] .text-zinc-500 { color: #71717a; }
 html[data-theme="whiteout"] .text-zinc-600 { color: #52525b; }
 html[data-theme="whiteout"] .text-zinc-700 { color: #3f3f46; }
+/* Fix dark UI elements in White-Out */
+html[data-theme="whiteout"] .bg-zinc-950   { background-color: #ececed; }
+html[data-theme="whiteout"] .border-zinc-700 { border-color: #a1a1aa; }
+html[data-theme="whiteout"] .text-green-400 { color: #16a34a; }
+html[data-theme="whiteout"] .text-green-500 { color: #15803d; }
+/* Fix kanban card badge tints on light background */
+html[data-theme="whiteout"] .bg-zinc-800\/30 { background-color: rgba(0,0,0,0.05); }
+html[data-theme="whiteout"] .bg-zinc-800\/60 { background-color: rgba(0,0,0,0.10); }
+/* Fix modal/overlay backdrops — they go full-white on White-Out */
+html[data-theme="whiteout"] .bg-black\/90   { background-color: rgba(255,255,255,0.94) !important; }
+html[data-theme="whiteout"] .bg-black\/80   { background-color: rgba(255,255,255,0.88) !important; }
+/* Drag handle dots + borders in kanban column headers */
+html[data-theme="whiteout"] .text-zinc-800  { color: #71717a; }
+
+/* Panel-X: bold display typography for headings and UI labels */
+html[data-theme="panel-x"] h1,
+html[data-theme="panel-x"] h2,
+html[data-theme="panel-x"] h3 {
+  font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+  letter-spacing: 0.04em;
+}
+html[data-theme="panel-x"] .font-mono {
+  font-family: 'Bebas Neue', 'Courier New', monospace;
+  letter-spacing: 0.06em;
+}
 
 /* ══════════════════════════════════════════════════════════════════
    CYBER-GRID CANVAS BACKGROUND
@@ -148,6 +190,22 @@ html[data-theme="whiteout"][data-pattern="dots"] body {
 }
 html[data-theme="whiteout"][data-pattern="noise"] body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Panel-X wallpaper patterns — darker base means patterns need slightly more opacity */
+html[data-theme="panel-x"][data-pattern="grid"] body {
+  background-image:
+    linear-gradient(to right, rgba(232,0,61,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(232,0,61,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+html[data-theme="panel-x"][data-pattern="dots"] body {
+  background-image: radial-gradient(rgba(232,0,61,0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+html[data-theme="panel-x"][data-pattern="noise"] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
 

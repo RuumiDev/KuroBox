@@ -9,7 +9,7 @@ import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import Button from '@/components/ui/Button';
 import {
   Plus, LogOut, LayoutGrid, Clock, Pencil, Check, X, Trash2,
-  Activity, Database, GitBranch, TrendingUp, ArrowRight,
+  Activity, Database, GitBranch, TrendingUp, ArrowRight, Settings2,
 } from 'lucide-react';
 import ThemeSelector from '@/components/navigation/ThemeSelector';
 
@@ -216,7 +216,19 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
             </span>
           </div>
           <div className="flex items-center gap-3">
+            {initialUsername && (
+              <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest hidden md:inline">
+                SIGN-OFF: {initialUsername.toUpperCase()}
+              </span>
+            )}
             <ThemeSelector />
+            <button
+              onClick={() => router.push('/settings/interface')}
+              title="Interface Settings"
+              className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
+            >
+              <Settings2 size={13} />
+            </button>
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
@@ -263,10 +275,13 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
           </section>
 
           {/* ── Two-column layout: boards + activity ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className={boards.length === 1
+            ? 'flex flex-col items-center'
+            : 'grid grid-cols-1 lg:grid-cols-3 gap-6'
+          }>
 
             {/* ── Board list (2/3 width) ── */}
-            <section className="lg:col-span-2">
+            <section className={boards.length === 1 ? 'w-full max-w-xl' : 'lg:col-span-2'}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Database size={13} className="text-[var(--kb-accent)]" />
@@ -412,6 +427,7 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
             </section>
 
             {/* ── Activity Log Feed (1/3 width) ── */}
+            {boards.length !== 1 && (
             <section>
               <div className="flex items-center gap-2 mb-3">
                 <GitBranch size={13} className="text-[var(--kb-accent)]" />
@@ -461,6 +477,7 @@ export default function DashboardClient({ initialBoards, userId, initialUsername
                 )}
               </div>
             </section>
+            )}
           </div>
         </main>
       </div>

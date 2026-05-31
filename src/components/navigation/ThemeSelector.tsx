@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Moon, Zap, Flame, Sun, ChevronDown, Check } from 'lucide-react';
+import { Moon, Zap, Flame, Sun, BookOpen, ChevronDown, Check } from 'lucide-react';
 import { useTheme, THEME_PROFILES, ThemeId } from '@/lib/context/ThemeContext';
 
 const THEME_ICONS: Record<ThemeId, React.ReactNode> = {
-  stealth:   <Moon  size={12} />,
-  radiation: <Zap   size={12} />,
-  overdrive: <Flame size={12} />,
-  whiteout:  <Sun   size={12} />,
+  stealth:   <Moon     size={12} />,
+  radiation: <Zap      size={12} />,
+  overdrive: <Flame    size={12} />,
+  whiteout:  <Sun      size={12} />,
+  'panel-x': <BookOpen size={12} />,
 };
 
 export default function ThemeSelector() {

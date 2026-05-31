@@ -132,3 +132,40 @@ ALTER TABLE profiles
     ADD COLUMN IF NOT EXISTS background_pattern TEXT
     CHECK (background_pattern IN ('none', 'grid', 'dots', 'noise'))
     DEFAULT 'none';
+
+-- ============================================================
+-- v3.0 SHOKUNIN MIGRATIONS
+-- Run these in the Supabase SQL editor if upgrading an existing DB.
+-- Safe to run on a fresh schema as well (IF NOT EXISTS guards used).
+-- ============================================================
+
+-- Profiles: active wallpaper preference (expanded from background_pattern for future multi-preset support)
+ALTER TABLE profiles
+    ADD COLUMN IF NOT EXISTS active_wallpaper TEXT DEFAULT 'matrix-grid' NOT NULL;
+
+-- Profiles: shokunin craftsman identifier (user-facing sign-off name)
+ALTER TABLE profiles
+    ADD COLUMN IF NOT EXISTS shokunin_tag TEXT DEFAULT 'Craftsman' NOT NULL;
+
+-- Batch board initialisation helper — called during onboarding Step 3
+-- Creates the starter board and returns the new board UUID for immediate routing.
+CREATE OR REPLACE FUNCTION initialize_starter_board(
+    user_id_param   UUID,
+    board_title     TEXT,
+    initial_columns JSONB
+)
+RETURNS UUID AS $$
+DECLARE
+    new_board_id UUID;
+BEGIN
+    INSERT INTO boards (user_id, title, pipeline_columns, config)
+    VALUES (
+        user_id_param,
+        board_title,
+        initial_columns,
+        '{"view": "kanban", "column_order": [], "visible_attributes": []}'::jsonb
+    )
+    RETURNING id INTO new_board_id;
+    RETURN new_board_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

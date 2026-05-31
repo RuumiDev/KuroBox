@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 // Inline script that reads localStorage before first paint to prevent theme flash.
-const INIT_THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('kurobox-theme');var v=['stealth','radiation','overdrive','whiteout'];if(t&&v.indexOf(t)!==-1)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const INIT_THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('kurobox-theme');var v=['stealth','radiation','overdrive','whiteout','panel-x'];if(t&&v.indexOf(t)!==-1)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
