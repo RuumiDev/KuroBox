@@ -1,4 +1,8 @@
-# KuroBox — Dynamic Kanban & Table Engine
+# KuroBox — Universal Kanban & Spreadsheet Engine
+
+<p align="center">
+  <img src="./Kuroboxfavicon/Icons/KuroBanner.gif" alt="KuroBox Banner" width="100%" />
+</p>
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=flat-square&logo=supabase)

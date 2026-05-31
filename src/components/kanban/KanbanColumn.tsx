@@ -23,7 +23,7 @@ export default function KanbanColumn({
   onAddCard,
 }: KanbanColumnProps) {
   return (
-    <div className="flex flex-col w-72 shrink-0 snap-start min-h-0 h-full">
+    <div className="flex flex-col w-[300px] shrink-0 snap-start">
       {/* Column header */}
       <div className="flex items-center justify-between mb-3 px-1 shrink-0">
         <div className="flex items-center gap-2">
@@ -43,16 +43,18 @@ export default function KanbanColumn({
         </button>
       </div>
 
-      {/* Drop zone — scrolls independently, never overflows the board */}
+      {/* Drop zone — constrained height scrolls independently */}
       <Droppable droppableId={columnId}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex flex-col gap-2 flex-1 min-h-[60px] overflow-y-auto scrollbar-thin p-2 rounded-sm transition-all duration-150 ${
+            className={`flex flex-col gap-3 pr-1 overflow-y-auto scrollbar-thin p-2 rounded-sm transition-all duration-150 ${
               snapshot.isDraggingOver
-                ? 'border-2 border-dashed border-[var(--kb-accent)] bg-[var(--kb-accent)]/5'
-                : 'border border-zinc-800 bg-zinc-900/20'
+                ? 'min-h-[80px] border-2 border-dashed border-[var(--kb-accent)] bg-[var(--kb-accent)]/5'
+                : cards.length === 0
+                ? 'min-h-[80px] h-auto border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30'
+                : 'max-h-[calc(100vh-240px)] border border-zinc-800 bg-zinc-900/20'
             }`}
           >
             {cards.map((card, index) => (
