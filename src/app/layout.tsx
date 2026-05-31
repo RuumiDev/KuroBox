@@ -13,16 +13,73 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'KuroBox',
   description:
-    'A flexible, developer-centric productivity tool for tracking any structured dataset.',
+    'Universal Kanban & Spreadsheet Engine // 職人仕様の生産性向上システム',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kurobox.vercel.app',
+  ),
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
-      { url: '/icons/light/favicon-32x32.png', media: '(prefers-color-scheme: dark)', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/dark/favicon-32x32.png', media: '(prefers-color-scheme: light)', sizes: '32x32', type: 'image/png' },
+      {
+        url: '/Kuroboxfavicon/White/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/Kuroboxfavicon/Black/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/Kuroboxfavicon/White/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/Kuroboxfavicon/Black/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+        media: '(prefers-color-scheme: dark)',
+      },
     ],
     apple: [
-      { url: '/icons/light/apple-touch-icon.png', media: '(prefers-color-scheme: dark)' },
-      { url: '/icons/dark/apple-touch-icon.png', media: '(prefers-color-scheme: light)' },
+      {
+        url: '/Kuroboxfavicon/Icons/apple-touch-icon.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
     ],
+    other: [
+      { rel: 'icon', url: '/Kuroboxfavicon/Black/favicon.ico' },
+    ],
+  },
+  openGraph: {
+    title: 'KuroBox — Universal Kanban & Spreadsheet Engine',
+    description:
+      'A refined, high-craftsmanship workspace built with Next.js 15 and Supabase. Tailor custom layouts with absolute geometric flexibility.',
+    url: '/',
+    siteName: 'KuroBox',
+    images: [
+      {
+        url: '/Kuroboxfavicon/Icons/KuroBanner.png',
+        width: 1200,
+        height: 630,
+        alt: 'KuroBox — Minimalist Workspace Interface Display Banner',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'KuroBox — Universal Kanban & Spreadsheet Engine',
+    description: 'Modern Japanese Minimalist x Tactical Zen Workspace.',
+    images: ['/Kuroboxfavicon/Icons/KuroBanner.png'],
   },
 };
 
